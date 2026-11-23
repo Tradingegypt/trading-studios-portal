@@ -1,14 +1,37 @@
-const rawStreamUrl = document.getElementById('deliverable-stream-url').value.trim();
-const previewUrl = document.getElementById('deliverable-preview-url').value.trim();
+function formatCloudDirectUrl(url) {
+  if (!url) return '';
+  let cleanUrl = url.trim();
 
-const newDel = {
-  id: 'vid_' + Date.now(),
-  title: title,
-  category: category,
-  aspect: category === 'social' ? '9:16 Vertical' : (category === 'teaser' ? '2.39:1 Anamorphic' : '16:9 DCI'),
-  specs: specs,
-  streamUrl: previewUrl || rawStreamUrl,
-  downloadUrl: rawStreamUrl,
-  duration: '03:30',
-  thumbnail: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=800&q=80'
-};
+  // Google Drive
+  const gdMatch = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (gdMatch && gdMatch[1]) {
+    return `https://drive.google.com/uc?export=download&id=${gdMatch[1]}`;
+  }
+
+  // Dropbox
+  if (cleanUrl.includes('dropbox.com')) {
+    return cleanUrl
+      .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
+      .replace(/([?&])dl=0/, '$1dl=1');
+  }
+
+  // OneDrive / SharePoint
+  if (
+    cleanUrl.includes('1drv.ms') ||
+    cleanUrl.includes('onedrive.live.com') ||
+    cleanUrl.includes('sharepoint.com')
+  ) {
+    if (cleanUrl.includes('download=1')) return cleanUrl;
+    return cleanUrl + (cleanUrl.includes('?') ? '&download=1' : '?download=1');
+  }
+
+  return cleanUrl;
+}
+
+function openActiveVideoOnOneDrive() {
+  if (!activeDeliverable || !activeDeliverable.downloadUrl) {
+    showToast('لا يوجد رابط متاح لهذا المقطع');
+    return;
+  }
+  window.open(activeDeliverable.downloadUrl.trim(), '_blank', 'noopener,noreferrer');
+}
