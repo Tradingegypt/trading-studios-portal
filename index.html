@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TRADING STUDIOS | بوابة تسليم الماستر السينمائي 4K</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050505'/><polygon points='50,15 15,85 35,85 50,55 65,85 85,85' fill='%23FFFFFF'/><polygon points='50,52 38,82 62,82' fill='%23FF5500'/></svg>" />
+
+  <!-- Google Fonts: Cairo (Arabic) & Montserrat (Brand & English) & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#050505',
+            carbon: {
+              950: '#080808',
+              900: '#0E0E0E',
+              850: '#141414',
+              800: '#1C1C1C',
+              700: '#2A2A2A',
+            },
+            brand: {
+              orange: '#FF5500',
+              hover: '#FF6A1A',
+              glow: 'rgba(255, 85, 0, 0.45)',
+              gold: '#E5A93C'
+            }
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+            montserrat: ['Montserrat', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'laser-sweep': 'laserSweep 2.5s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            laserSweep: {
+              '0%': { transform: 'translateX(-100%)' },
+              '100%': { transform: 'translateX(200%)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti CDN for client approvals -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- GSAP for Ultra-Smooth Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Supabase JS Client (Fallback ready) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080808;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222222;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FF5500;
+    }
+
+    /* Ambient Spotlight Cursor */
+    #cursor-spotlight {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: radial-gradient(700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 85, 0, 0.05), transparent 45%);
+      transition: opacity 0.3s ease;
+    }
+
+    /* Glassmorphism Classes */
+    .glass-panel {
+      background: rgba(14, 14, 14, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-panel-elevated {
+      background: rgba(20, 20, 20, 0.85);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .glass-panel:hover {
+      border-color: rgba(255, 85, 0, 0.28);
+    }
+
+    /* 3D Tilt Card */
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform;
+    }
+
+    /* Theater Mode Dimmer */
+    #theater-backdrop {
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    body.in-theater-mode #theater-backdrop {
+      pointer-events: auto;
+      opacity: 0.96;
+    }
+    body.in-theater-mode .theater-focus {
+      z-index: 60 !important;
+      position: relative;
+    }
+
+    /* Range Input Customization */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: rgba(255,255,255,0.15);
+      border-radius: 9999px;
+      height: 4px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #FF5500;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 85, 0, 0.8);
+      transition: transform 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+    }
+
+    /* Glowing borders */
+    .glow-orange-box {
+      box-shadow: 0 0 35px -5px rgba(255, 85, 0, 0.35);
+    }
+    .glow-orange-text {
+      text-shadow: 0 0 18px rgba(255, 85, 0, 0.6);
+    }
+
+    /* Cinematic Film Grain Overlay */
+    .film-grain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.025;
+      z-index: 25;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+  </style>
+</head>
+<body class="bg-obsidian text-white font-cairo antialiased selection:bg-brand-orange selection:text-white min-h-screen overflow-x-hidden relative">
+
+  <!-- Interactive Spotlight Cursor Glow -->
+  <div id="cursor-spotlight"></div>
+
+  <!-- Subtle Film Grain Effect -->
+  <div class="film-grain"></div>
+
+  <!-- Theater Mode Backdrop (Overlay) -->
+  <div id="theater-backdrop" class="fixed inset-0 bg-[#020202] z-50 transition-opacity duration-500 backdrop-blur-md flex items-center justify-center">
+    <div class="absolute top-6 left-6 flex items-center gap-3 text-xs font-mono text-neutral-400 bg-carbon-900/80 px-4 py-2 rounded-full border border-neutral-800">
+      <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
+      <span id="theater-exit-hint">اضغط ESC أو ⌘T للخروج من وضع المسرح السينمائي</span>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 1. CINEMATIC PRELOADER (1.2s Curtain Reveal)-->
+  <!-- ========================================== -->
+  <div id="preloader" class="fixed inset-0 z-[100] bg-obsidian flex flex-col items-center justify-center overflow-hidden">
+    <div class="relative flex flex-col items-center">
+      <!-- Animated Orange Sweep Bar behind logo -->
+      <div class="absolute -inset-10 bg-brand-orange/10 blur-3xl rounded-full scale-75 animate-pulse-slow"></div>
+      
+      <!-- Brand Typographic Logo Assembly -->
+      <div class="relative z-10 flex flex-col items-center select-none" id="preloader-logo">
+        <div class="flex items-center text-3xl md:text-5xl font-black font-montserrat tracking-[0.25em] text-white">
+          <span>TR</span>
+          <span class="relative inline-flex items-center justify-center mx-[1px]">
+            <!-- Custom A Letter with Vibrant Orange Triangle Counter -->
+            <svg class="h-[0.82em] w-[0.88em] inline-block" viewBox="0 0 100 100" fill="none">
+              <polygon points="50,2 6,98 27,98 50,44 73,98 94,98" fill="#FFFFFF" />
+              <polygon id="preloader-triangle" points="50,46 29,94 71,94" fill="#FF5500" class="drop-shadow-[0_0_12px_#FF5500]" />
+            </svg>
+          </span>
+          <span>DING</span>
+        </div>
+        <div class="text-[11px] md:text-xs font-semibold tracking-[0.6em] text-neutral-400 uppercase mt-2 font-montserrat pl-[0.6em]">
+          STUDIOS
+        </div>
+      </div>
+
+      <!-- Laser Light Sweep Indicator -->
+      <div class="w-48 h-[2px] bg-neutral-900 rounded-full mt-8 overflow-hidden relative">
+        <div class="absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-brand-orange to-transparent animate-laser-sweep"></div>
+      </div>
+      
+      <p class="text-[12px] font-mono text-neutral-500 mt-4 tracking-wider flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping"></span>
+        LOADING 4K MASTER PORTAL ENGINE
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. GLOBAL HEADER & SMART ADAPTIVE UX BAR -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 w-full border-b border-white/5 bg-obsidian/85 backdrop-blur-xl transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo & Brand Header -->
+      <div class="flex items-center gap-6">
+        <a href="javascript:void(0)" onclick="handleLogoClick()" class="group flex flex-col items-start cursor-pointer select-none">
+          <div class="flex items-center text-xl md:text-2xl font-black font-montserrat tracking-[0.24em] text-white group-hover:text-neutral-200 transition-colors">
+            <span>TR</span>
+            <span class="relative inline-flex items-center justify-center mx-[1px]">
+              <svg class="h-[0.82em] w-[0.88em] inline-block" viewBox="0 0 100 100" fill="none">
+                <polygon points="50,2 6,98 27,98 50,44 73,98 94,98" fill="#FFFFFF" />
+                <polygon points="50,46 29,94 71,94" fill="#FF5500" class="drop-shadow-[0_0_8px_#FF5500]" />
+              </svg>
+            </span>
+            <span>DING</span>
+          </div>
+          <div class="text-[9px] font-semibold tracking-[0.55em] text-neutral-400 uppercase font-montserrat pl-[0.55em] -mt-0.5">
+            STUDIOS
+          </div>
+        </a>
+
+        <!-- Vertical Divider -->
+        <div class="hidden sm:block h-6 w-px bg-neutral-800"></div>
+
+        <!-- Project / Client Active Indicator -->
+        <div id="header-client-info" class="hidden sm:flex items-center gap-2 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="header-client-name" class="font-semibold text-neutral-200">بوابة المراجعة</span>
+          <span class="text-neutral-600">•</span>
+          <span id="header-project-code" class="font-mono text-brand-orange bg-brand-orange/10 px-2 py-0.5 rounded border border-brand-orange/20">TRD-DEMO</span>
+        </div>
+      </div>
+
+      <!-- Center / Right: Adaptive Device Status Pill & Controls -->
+      <div class="flex items-center gap-3">
+        
+        <!-- Live Smart Device & OS Detection Pill -->
+        <div id="device-status-pill" class="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-carbon-900/90 border border-neutral-800/80 text-[11px] font-mono text-neutral-300 shadow-inner">
+          <span id="device-icon" class="text-brand-orange"><i data-lucide="cpu" class="w-3.5 h-3.5"></i></span>
+          <span id="device-mode-text">جاري فحص النظام...</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping"></span>
+        </div>
+
+        <!-- Audio SFX Toggle Button -->
+        <button id="audio-toggle-btn" onclick="toggleAudioFX()" title="تفعيل / كتم المؤثرات الصوتية" class="p-2 rounded-xl bg-carbon-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-brand-orange/50 transition-all flex items-center justify-center">
+          <i id="audio-icon" data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Dynamic OS Shortcuts Guide Trigger -->
+        <button onclick="toggleShortcutsModal()" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-carbon-900 border border-neutral-800 text-xs font-mono text-neutral-300 hover:text-white hover:border-brand-orange/50 transition-all">
+          <i data-lucide="command" class="w-3.5 h-3.5 text-brand-orange"></i>
+          <span>الاختصارات</span>
+        </button>
+
+        <!-- Admin Portal Trigger Button -->
+        <button id="admin-header-btn" onclick="openAdminModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-carbon-900/90 hover:bg-carbon-850 border border-neutral-800 hover:border-brand-orange/50 text-xs font-semibold text-neutral-300 hover:text-white transition-all shadow-sm">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-orange"></i>
+          <span class="hidden sm:inline">بوابة الإدارة</span>
+        </button>
+
+        <!-- Logout / Exit Client Portal (When authenticated) -->
+        <button id="logout-btn" onclick="logoutClient()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-950/30 hover:bg-red-900/40 border border-red-800/40 text-xs text-red-400 hover:text-red-300 transition-all">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">خروج</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Smart OS Shortcuts Bar (Desktop Only) -->
+    <div id="os-shortcuts-bar" class="hidden md:flex border-t border-white/[0.03] bg-carbon-950/60 py-1.5 px-6 items-center justify-between text-[11px] font-mono text-neutral-400">
+      <div class="flex items-center gap-6">
+        <span class="text-neutral-500 font-sans font-medium text-xs">أوامر التحكم السريع:</span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="px-1.5 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[10px]" id="kbd-theater">⌘ + T</kbd>
+          <span>المسرح السينمائي</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="px-1.5 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[10px]" id="kbd-download">⌘ + D</kbd>
+          <span>تحميل 4K فوري</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="px-1.5 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[10px]">Space</kbd>
+          <span>تشغيل / إيقاف</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <kbd class="px-1.5 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[10px]">F</kbd>
+          <span>شاشة كاملة</span>
+        </span>
+      </div>
+      <div id="os-extra-action" class="flex items-center gap-2">
+        <!-- Injected Windows IDM Copy Button or Mac P3 Badge -->
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 3. CLIENT ACCESS GATE (LOGIN SCREEN)       -->
+  <!-- ========================================== -->
+  <section id="auth-gate-view" class="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 sm:p-6 relative z-20">
+    <div class="w-full max-w-lg">
+      
+      <!-- Card Container -->
+      <div class="glass-panel-elevated rounded-3xl p-8 sm:p-10 border border-neutral-800 relative overflow-hidden shadow-2xl">
+        <!-- Ambient Orange Corner Glow -->
+        <div class="absolute -top-24 -left-24 w-60 h-60 bg-brand-orange/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-brand-orange/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Header -->
+        <div class="text-center relative z-10">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-orange/10 border border-brand-orange/30 text-brand-orange mb-5 shadow-lg shadow-brand-orange/20">
+            <i data-lucide="film" class="w-7 h-7"></i>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">بوابة استلام النسخ السينمائية 4K</h1>
+          <p class="text-neutral-400 text-sm mt-2 leading-relaxed">
+            أهلاً بكم في المنصة الخاصة باستوديو <span class="font-montserrat font-bold text-white tracking-wider">TRADING STUDIOS</span>. يرجى إدخال رمز الوصول السري الخاص بمشروعكم.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <form id="client-login-form" onsubmit="handleClientLogin(event)" class="mt-8 space-y-5 relative z-10">
+          <div>
+            <label for="client-access-code" class="block text-xs font-mono font-medium text-neutral-300 mb-2">
+              رمز الوصول للمشروع (ACCESS CODE)
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="client-access-code" 
+                placeholder="TRD-2026" 
+                required
+                autocomplete="off"
+                class="w-full bg-carbon-950 border border-neutral-700 focus:border-brand-orange rounded-xl px-4 py-3.5 text-center font-mono text-xl tracking-[0.2em] uppercase text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 transition-all"
+              />
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500">
+                <i data-lucide="key-round" class="w-5 h-5"></i>
+              </span>
+            </div>
+            <p id="auth-error-msg" class="text-xs text-rose-500 mt-2 font-medium hidden flex items-center gap-1.5">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>رمز الوصول غير صالح. يرجى التأكد من الرمز المرسل في بريدك الإلكتروني.</span>
+            </p>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            id="auth-submit-btn" 
+            class="w-full py-4 rounded-xl bg-brand-orange hover:bg-brand-hover text-white font-bold text-base tracking-wide transition-all shadow-lg shadow-brand-orange/25 hover:shadow-brand-orange/40 flex items-center justify-center gap-2 group cursor-pointer"
+          >
+            <span>دخول إلى مساحة العمل السينمائية</span>
+            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i>
+          </button>
+        </form>
+
+        <!-- Fast Demo Access Section (For Instant Evaluation) -->
+        <div class="mt-8 pt-6 border-t border-neutral-800/80 relative z-10 text-center">
+          <p class="text-xs text-neutral-400 font-medium mb-3">أو اختر أحد المشاريع التجريبية الفاخرة للاختبار الفوري:</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button onclick="quickLoginDemo('TRD-2026')" class="px-3 py-2 rounded-lg bg-carbon-900 hover:bg-carbon-800 border border-neutral-700/80 text-[11px] text-neutral-300 hover:text-brand-orange hover:border-brand-orange/50 transition-all font-mono">
+              <div class="font-bold text-white truncate">مشروع نيوم</div>
+              <div class="text-[10px] text-neutral-500">TRD-2026</div>
+            </button>
+            <button onclick="quickLoginDemo('TRD-7788')" class="px-3 py-2 rounded-lg bg-carbon-900 hover:bg-carbon-800 border border-neutral-700/80 text-[11px] text-neutral-300 hover:text-brand-orange hover:border-brand-orange/50 transition-all font-mono">
+              <div class="font-bold text-white truncate">مرسيدس-بنز</div>
+              <div class="text-[10px] text-neutral-500">TRD-7788</div>
+            </button>
+            <button onclick="quickLoginDemo('TRD-9900')" class="px-3 py-2 rounded-lg bg-carbon-900 hover:bg-carbon-800 border border-neutral-700/80 text-[11px] text-neutral-300 hover:text-brand-orange hover:border-brand-orange/50 transition-all font-mono">
+              <div class="font-bold text-white truncate">رد بول الصحراء</div>
+              <div class="text-[10px] text-neutral-500">TRD-9900</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Security & Isolation Note -->
+        <div class="mt-6 text-center text-[11px] text-neutral-400 font-mono flex items-center justify-center gap-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>تشفير مخصص 256-bit • عزل تام للملفات بين العملاء (100% Client Isolation)</span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. CLIENT WORKSPACE (AUTHENTICATED VIEW)   -->
+  <!-- ========================================== -->
+  <main id="client-workspace-view" class="hidden min-h-screen pb-24 relative z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+      <!-- Workspace Top Banner / Project Overview -->
+      <div class="glass-panel rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div>
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <span class="px-3 py-1 rounded-full bg-brand-orange/15 text-brand-orange border border-brand-orange/30 text-xs font-mono font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
+                <span id="project-deliverable-status">نسخة الماستر جاهزة للمراجعة 4K</span>
+              </span>
+              <span id="project-code-badge" class="px-2.5 py-0.5 rounded-full bg-carbon-800 text-neutral-300 text-xs font-mono">
+                TRD-2026
+              </span>
+              <span id="project-res-badge" class="px-2.5 py-0.5 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-400 text-xs font-mono">
+                DCI 4K • ProRes 422 HQ
+              </span>
+            </div>
+            <h1 id="client-project-title" class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              نيوم: الفيلم الوثائقي الدولي - النسخة السينمائية الكاملة
+            </h1>
+            <p id="client-project-sub" class="text-neutral-400 text-sm mt-2 flex items-center gap-2 flex-wrap">
+              <span>العميل: <strong id="client-name-display" class="text-white">شركة نيوم الدولية</strong></span>
+              <span class="text-neutral-600">•</span>
+              <span>تاريخ التسليم: <span id="client-delivery-date" class="font-mono text-neutral-300">2026-11-20</span></span>
+              <span class="text-neutral-600">•</span>
+              <span>إجمالي النسخ: <span id="client-files-count" class="font-mono text-brand-orange font-bold">4 نسخ</span></span>
+            </p>
+          </div>
+
+          <!-- Project Actions & Quick Export -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <button onclick="approveFinalCutModal()" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition-all shadow-lg shadow-emerald-600/30 flex items-center gap-2 cursor-pointer">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>اعتماد النسخة النهائية</span>
+            </button>
+            <button onclick="triggerActiveVideoDownload()" class="px-5 py-3 rounded-xl bg-brand-orange hover:bg-brand-hover text-white font-bold text-sm transition-all shadow-lg shadow-brand-orange/30 flex items-center gap-2 cursor-pointer">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>تحميل الماستر 4K الأصلي</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Video Player & Timestamped Review Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+        
+        <!-- Video Player Column (8 Cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <div id="video-theater-wrapper" class="glass-panel-elevated rounded-2xl p-2.5 sm:p-4 border border-neutral-800 transition-all duration-500 relative">
+            
+            <!-- Video Player Container -->
+            <div class="relative bg-black rounded-xl overflow-hidden aspect-video shadow-2xl group flex items-center justify-center" id="main-player-box">
+              
+              <!-- Video Tag with Fallback Support -->
+              <video 
+                id="main-video-element" 
+                class="w-full h-full object-contain"
+                playsinline 
+                preload="metadata"
+                onloadedmetadata="onVideoMetadataLoaded()"
+                ontimeupdate="onVideoTimeUpdate()"
+                onended="onVideoEnded()"
+              >
+                <!-- Video sources injected dynamically -->
+                Your browser does not support HTML5 video.
+              </video>
+
+              <!-- Procedural Real-time Cinematic 4K Fallback Canvas (In case external video stream is buffering/offline) -->
+              <canvas id="fallback-canvas" class="absolute inset-0 w-full h-full pointer-events-none hidden"></canvas>
+
+              <!-- Video Overlay Watermark & Badges -->
+              <div class="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-none">
+                <span class="px-2.5 py-1 rounded bg-black/75 backdrop-blur-md border border-white/10 text-[10px] font-mono font-bold text-brand-orange flex items-center gap-1.5 shadow-lg">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping"></span>
+                  4K HDR MASTER
+                </span>
+                <span id="player-aspect-badge" class="px-2 py-1 rounded bg-black/75 backdrop-blur-md border border-white/10 text-[10px] font-mono text-neutral-300">
+                  16:9 DCI
+                </span>
+              </div>
+
+              <!-- Big Center Play Button Overlay -->
+              <div 
+                id="big-play-btn" 
+                onclick="togglePlayPause()"
+                class="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] transition-all duration-300 cursor-pointer z-10"
+              >
+                <div class="w-18 h-18 sm:w-22 sm:h-22 rounded-full bg-brand-orange/90 text-white flex items-center justify-center shadow-2xl shadow-brand-orange/50 hover:scale-110 transition-transform">
+                  <i data-lucide="play" class="w-9 h-9 fill-white translate-x-1"></i>
+                </div>
+              </div>
+
+              <!-- Cinematic Ambient Responsive Backglow in Theater Mode -->
+              <div id="ambient-video-glow" class="absolute -inset-10 bg-brand-orange/15 blur-3xl rounded-3xl opacity-0 transition-opacity duration-700 pointer-events-none -z-10"></div>
+
+              <!-- Custom Video Controls Bar -->
+              <div id="custom-controls" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4 transition-opacity duration-300 flex flex-col gap-2 z-20 opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+                
+                <!-- Timeline Scrub Bar -->
+                <div class="flex items-center gap-2 group/scrub relative">
+                  <input 
+                    type="range" 
+                    id="video-scrubber" 
+                    min="0" 
+                    max="100" 
+                    value="0" 
+                    step="0.1" 
+                    oninput="onScrubVideo(this.value)"
+                    class="w-full cursor-pointer"
+                  />
+                  <!-- Markers on timeline for feedback timestamps -->
+                  <div id="timeline-comment-markers" class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 pointer-events-none"></div>
+                </div>
+
+                <!-- Controls Buttons Row -->
+                <div class="flex items-center justify-between text-xs font-mono text-white pt-1">
+                  
+                  <div class="flex items-center gap-3">
+                    <!-- Play / Pause Button -->
+                    <button onclick="togglePlayPause()" class="p-1.5 hover:text-brand-orange transition-colors">
+                      <i id="btn-play-icon" data-lucide="play" class="w-5 h-5"></i>
+                    </button>
+
+                    <!-- Skip Back 5s -->
+                    <button onclick="seekRelative(-5)" class="p-1.5 hover:text-brand-orange transition-colors hidden sm:inline" title="رجوع 5 ثواني">
+                      <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Skip Forward 5s -->
+                    <button onclick="seekRelative(5)" class="p-1.5 hover:text-brand-orange transition-colors hidden sm:inline" title="تقديم 5 ثواني">
+                      <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Volume Slider -->
+                    <div class="flex items-center gap-1.5">
+                      <button onclick="toggleMuteVideo()" class="p-1 hover:text-brand-orange transition-colors">
+                        <i id="volume-icon" data-lucide="volume-2" class="w-4 h-4"></i>
+                      </button>
+                      <input 
+                        type="range" 
+                        id="volume-slider" 
+                        min="0" 
+                        max="1" 
+                        step="0.05" 
+                        value="1" 
+                        oninput="onVolumeChange(this.value)"
+                        class="w-14 sm:w-20 cursor-pointer hidden sm:inline"
+                      />
+                    </div>
+
+                    <!-- Timecode Display -->
+                    <span class="text-neutral-300 font-mono text-[11px] select-none">
+                      <span id="current-timecode" class="text-brand-orange font-bold">00:00:00</span>
+                      <span class="text-neutral-500"> / </span>
+                      <span id="duration-timecode">00:00:00</span>
+                    </span>
+                  </div>
+
+                  <!-- Right Player Actions -->
+                  <div class="flex items-center gap-2">
+                    
+                    <!-- Resolution Picker -->
+                    <div class="relative group/res">
+                      <button class="px-2 py-1 rounded bg-carbon-800 text-[10px] font-bold text-white border border-neutral-700 hover:border-brand-orange transition-colors">
+                        4K UHD
+                      </button>
+                    </div>
+
+                    <!-- Theater Mode Button -->
+                    <button onclick="toggleTheaterMode()" class="p-1.5 hover:text-brand-orange transition-colors text-neutral-300" title="وضع المسرح السينمائي (Cmd/Ctrl + T)">
+                      <i data-lucide="tv" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Fullscreen Button -->
+                    <button onclick="toggleFullscreen()" class="p-1.5 hover:text-brand-orange transition-colors text-neutral-300" title="شاشة كاملة (F)">
+                      <i data-lucide="maximize" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Active Video Details & Download Quick-bar -->
+            <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-neutral-800/80">
+              <div>
+                <h3 id="active-video-title" class="text-lg font-bold text-white">الفيلم الرئيسي - الماستر الأصلي (Final Master Cut)</h3>
+                <div class="flex items-center gap-3 text-xs text-neutral-400 font-mono mt-1 flex-wrap">
+                  <span id="active-video-specs" class="text-neutral-300">24.8 GB • ProRes 422 HQ • 3840x2160 • 59.94 fps</span>
+                  <span class="text-neutral-600">•</span>
+                  <span class="text-emerald-400 flex items-center gap-1">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    معايرة لونية معتمدة Rec.709 / P3
+                  </span>
+                </div>
+              </div>
+
+              <!-- Quick File Download & Copy Buttons -->
+              <div class="flex items-center gap-2">
+                <button onclick="triggerActiveVideoDownload()" class="px-4 py-2 rounded-xl bg-brand-orange hover:bg-brand-hover text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-brand-orange/20">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>تحميل مباشر</span>
+                </button>
+                <button onclick="copyDirectVideoLink()" class="px-3.5 py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 text-neutral-300 hover:text-white border border-neutral-700 text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer">
+                  <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                  <span>نسخ الرابط</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Feedback & Timestamped Notes Column (4 Cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-panel-elevated rounded-2xl p-5 border border-neutral-800 shadow-xl flex flex-col h-full max-h-[640px]">
+            
+            <!-- Box Title & Capture Timestamp Pill -->
+            <div class="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
+              <div class="flex items-center gap-2">
+                <i data-lucide="message-square" class="w-4 h-4 text-brand-orange"></i>
+                <h2 class="font-bold text-white text-sm">ملاحظات وطلبات التعديل</h2>
+              </div>
+              <span id="feedback-count-badge" class="px-2 py-0.5 rounded-full bg-carbon-800 text-[11px] font-mono text-neutral-400">
+                0 ملاحظات
+              </span>
+            </div>
+
+            <!-- Add New Timestamped Comment Form -->
+            <div class="bg-carbon-950/80 rounded-xl p-3.5 border border-neutral-800/80 mb-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-neutral-400">التوقيت المحدد:</span>
+                <button onclick="captureCurrentPlayheadTime()" class="px-2.5 py-1 rounded bg-brand-orange/15 hover:bg-brand-orange/25 text-brand-orange border border-brand-orange/30 text-xs font-mono font-bold flex items-center gap-1.5 transition-all" title="التقاط التوقيت الحالي للفيديو">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span id="stamp-capture-display">00:00:00</span>
+                  <span class="text-[10px] text-neutral-400">(التقاط الآن)</span>
+                </button>
+              </div>
+
+              <!-- Note Category Select -->
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px]">
+                <button type="button" onclick="selectCommentCategory('Color')" class="cat-pill px-2 py-1 rounded bg-brand-orange/20 border border-brand-orange text-brand-orange whitespace-nowrap">تعديل ألوان</button>
+                <button type="button" onclick="selectCommentCategory('Audio')" class="cat-pill px-2 py-1 rounded bg-carbon-800 border border-neutral-700 text-neutral-400 hover:text-white whitespace-nowrap">صوتيات</button>
+                <button type="button" onclick="selectCommentCategory('Edit')" class="cat-pill px-2 py-1 rounded bg-carbon-800 border border-neutral-700 text-neutral-400 hover:text-white whitespace-nowrap">مونتاج</button>
+                <button type="button" onclick="selectCommentCategory('VFX')" class="cat-pill px-2 py-1 rounded bg-carbon-800 border border-neutral-700 text-neutral-400 hover:text-white whitespace-nowrap">مؤثرات VFX</button>
+              </div>
+
+              <!-- Textarea -->
+              <textarea 
+                id="comment-text-input" 
+                rows="2" 
+                placeholder="اكتب ملاحظتك للمخرج أو مهندس الصوت عند هذا التوقيت..."
+                class="w-full bg-carbon-900 border border-neutral-700 focus:border-brand-orange rounded-lg p-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-brand-orange resize-none"
+              ></textarea>
+
+              <button 
+                onclick="submitClientComment()" 
+                class="w-full py-2 rounded-lg bg-neutral-200 hover:bg-white text-obsidian font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-brand-orange"></i>
+                <span>تسجيل الملاحظة على الفيديو</span>
+              </button>
+            </div>
+
+            <!-- Feedbacks Stream List -->
+            <div id="comments-list" class="flex-1 overflow-y-auto space-y-2.5 pr-1 text-xs">
+              <!-- Dynamically populated comments -->
+              <div class="text-center py-8 text-neutral-500 text-xs font-mono">
+                لا توجد ملاحظات مسجلة بعد. يمكنك إيقاف الفيديو عند أي لقطة وتسجيل ملاحظتك فوراً.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Multi-Video Deliverables Library & Search -->
+      <section class="mt-14">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white">حزمة التسليم الكاملة (Deliverables Package)</h2>
+            <p class="text-neutral-400 text-xs mt-1">تصفح كافة النسخ السينمائية والماستر المعد للعرض والسوشيال ميديا</p>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <!-- Search Bar -->
+            <div class="relative w-full sm:w-64">
+              <input 
+                type="text" 
+                id="deliverables-search" 
+                oninput="filterDeliverables()" 
+                placeholder="بحث في النسخ..." 
+                class="w-full bg-carbon-900 border border-neutral-800 focus:border-brand-orange rounded-xl px-3.5 py-2 pl-9 text-xs text-white placeholder-neutral-500 focus:outline-none"
+              />
+              <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex items-center gap-1.5 bg-carbon-900 p-1 rounded-xl border border-neutral-800 text-xs">
+              <button onclick="setFilterCategory('all')" class="filter-tab-btn active px-3 py-1 rounded-lg bg-brand-orange text-white font-medium">الكل</button>
+              <button onclick="setFilterCategory('hero')" class="filter-tab-btn px-3 py-1 rounded-lg text-neutral-400 hover:text-white">الرئيسي</button>
+              <button onclick="setFilterCategory('social')" class="filter-tab-btn px-3 py-1 rounded-lg text-neutral-400 hover:text-white">سوشيال 9:16</button>
+              <button onclick="setFilterCategory('teaser')" class="filter-tab-btn px-3 py-1 rounded-lg text-neutral-400 hover:text-white">تيزر</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Deliverables Cards Grid (With 3D Tilt) -->
+        <div id="deliverables-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Dynamically populated 3D Tilt video cards -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- 5. ADMIN DASHBOARD MODAL & MANAGEMENT SUITE-->
+  <!-- ========================================== -->
+  <div id="admin-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6 hidden overflow-y-auto">
+    <div class="glass-panel-elevated w-full max-w-5xl rounded-3xl border border-neutral-800 shadow-2xl my-8 overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Admin Modal Header -->
+      <div class="p-6 border-b border-neutral-800 flex items-center justify-between bg-carbon-950/70">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-brand-orange/15 border border-brand-orange/30 text-brand-orange flex items-center justify-center">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              لوحة التحكم والإدارة السينمائية
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-orange/20 text-brand-orange">ADMIN PORTAL</span>
+            </h2>
+            <p class="text-xs text-neutral-400">إدارة العملاء، رفع النسخ 4K، متابعة الملاحظات وإرسال إيميلات التسليم</p>
+          </div>
+        </div>
+        
+        <button onclick="closeAdminModal()" class="p-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 text-neutral-400 hover:text-white transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Admin Login Gate (If not unlocked) -->
+      <div id="admin-login-lock" class="p-10 text-center flex-1 flex flex-col items-center justify-center">
+        <div class="w-16 h-16 rounded-full bg-brand-orange/10 border border-brand-orange/20 text-brand-orange flex items-center justify-center mb-4">
+          <i data-lucide="lock" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">تسجيل الدخول لبوابة الإدارة</h3>
+        <p class="text-neutral-400 text-xs mt-1 max-w-sm">أدخل كلمة المرور الخاصة بفريق إنتاج TRADING STUDIOS للمتابعة</p>
+        
+        <form onsubmit="handleAdminAuth(event)" class="mt-6 w-full max-w-xs space-y-3">
+          <input 
+            type="password" 
+            id="admin-password-input" 
+            placeholder="كلمة المرور (admin123)" 
+            required 
+            class="w-full bg-carbon-950 border border-neutral-700 focus:border-brand-orange rounded-xl px-4 py-2.5 text-center text-sm font-mono text-white focus:outline-none"
+          />
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-orange hover:bg-brand-hover text-white font-bold text-xs transition-all shadow-md shadow-brand-orange/25">
+            فتح لوحة الإدارة
+          </button>
+          <p id="admin-auth-err" class="text-xs text-rose-500 font-mono hidden">كلمة المرور غير صحيحة (التجريبية: admin123)</p>
+        </form>
+      </div>
+
+      <!-- Admin Unlocked Workspace (Tabs System) -->
+      <div id="admin-unlocked-content" class="hidden flex-1 overflow-hidden flex flex-col">
+        
+        <!-- Admin Navigation Tabs -->
+        <div class="flex items-center gap-2 px-6 pt-4 border-b border-neutral-800 bg-carbon-950/40 overflow-x-auto text-xs font-semibold">
+          <button onclick="switchAdminTab('clients')" id="tab-btn-clients" class="admin-tab active pb-3 px-3 text-brand-orange border-b-2 border-brand-orange flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>إدارة العملاء والمشاريع</span>
+          </button>
+          <button onclick="switchAdminTab('deliverables')" id="tab-btn-deliverables" class="admin-tab pb-3 px-3 text-neutral-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="film" class="w-4 h-4"></i>
+            <span>إضافة وتعديل فيديوهات 4K</span>
+          </button>
+          <button onclick="switchAdminTab('feedback')" id="tab-btn-feedback" class="admin-tab pb-3 px-3 text-neutral-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>ملاحظات العملاء والاعتمادات</span>
+          </button>
+          <button onclick="switchAdminTab('supabase')" id="tab-btn-supabase" class="admin-tab pb-3 px-3 text-neutral-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap font-mono">
+            <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i>
+            <span>قاعدة البيانات (Supabase)</span>
+          </button>
+        </div>
+
+        <!-- Scrollable Tab Content Container -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+          
+          <!-- TAB 1: CLIENTS MANAGEMENT -->
+          <div id="admin-tab-clients" class="admin-tab-pane space-y-6">
+            
+            <!-- Quick Add Client Bar -->
+            <div class="bg-carbon-900/80 rounded-2xl p-5 border border-neutral-800">
+              <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                <i data-lucide="user-plus" class="w-4 h-4 text-brand-orange"></i>
+                إضافة عميل / مشروع جديد
+              </h3>
+              <form onsubmit="handleCreateClient(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <input type="text" id="new-client-name" placeholder="اسم العميل / الشركة" required class="bg-carbon-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:border-brand-orange focus:outline-none" />
+                <input type="text" id="new-project-title" placeholder="عنوان المشروع (وثائقي / إعلان)" required class="bg-carbon-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:border-brand-orange focus:outline-none" />
+                <input type="email" id="new-client-email" placeholder="البريد الإلكتروني للعميل" required class="bg-carbon-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:border-brand-orange focus:outline-none font-mono" />
+                
+                <div class="flex items-center gap-2">
+                  <input type="text" id="new-client-code" placeholder="TRD-XXXX" required readonly class="w-28 bg-carbon-950 border border-neutral-700 rounded-lg px-2 py-2 text-xs text-brand-orange font-mono text-center font-bold" />
+                  <button type="button" onclick="generateNewClientCode()" class="p-2 rounded-lg bg-carbon-800 hover:bg-carbon-700 text-neutral-300" title="توليد رمز جديد">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                  </button>
+                  <button type="submit" class="flex-1 py-2 rounded-lg bg-brand-orange hover:bg-brand-hover text-white font-bold text-xs transition-colors">
+                    إنشاء
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Existing Clients Table -->
+            <div class="bg-carbon-900/60 rounded-2xl border border-neutral-800 overflow-hidden">
+              <div class="p-4 border-b border-neutral-800 flex items-center justify-between">
+                <span class="text-xs font-bold text-white">قائمة العملاء النشطين ومفاتيح الوصول</span>
+                <span id="admin-client-count" class="text-xs font-mono text-neutral-400">3 عملاء</span>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs">
+                  <thead class="bg-carbon-950 text-neutral-400 font-mono border-b border-neutral-800">
+                    <tr>
+                      <th class="p-3">رمز العميل</th>
+                      <th class="p-3">العميل والمشروع</th>
+                      <th class="p-3">البريد</th>
+                      <th class="p-3">عدد الفيديوهات</th>
+                      <th class="p-3 text-center">إرسال إيميل التسليم</th>
+                      <th class="p-3 text-center">إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-clients-tbody" class="divide-y divide-neutral-800/60 text-neutral-300 font-mono">
+                    <!-- Injected Clients Rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- TAB 2: DELIVERABLES MANAGEMENT -->
+          <div id="admin-tab-deliverables" class="admin-tab-pane hidden space-y-6">
+            <div class="bg-carbon-900/80 rounded-2xl p-5 border border-neutral-800">
+              <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="video" class="w-4 h-4 text-brand-orange"></i>
+                إضافة فيديو 4K جديد لعميل
+              </h3>
+
+              <form onsubmit="handleAddDeliverable(event)" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-[11px] text-neutral-400 mb-1">اختر العميل المستهدف:</label>
+                    <select id="deliverable-target-client" class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2 text-xs text-white focus:border-brand-orange focus:outline-none">
+                      <!-- Injected client options -->
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-neutral-400 mb-1">عنوان المقطع (Video Title):</label>
+                    <input type="text" id="deliverable-title" placeholder="مثال: الإعلان الرئيسي للتلفزيون 60s" required class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2 text-xs text-white focus:border-brand-orange focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-neutral-400 mb-1">التصنيف والنسبة:</label>
+                    <select id="deliverable-category" class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2 text-xs text-white focus:border-brand-orange focus:outline-none">
+                      <option value="hero">الفيلم الرئيسي (16:9 / 2.39:1 Cinema)</option>
+                      <option value="social">سوشيال ميديا ريلز (9:16 Vertical)</option>
+                      <option value="teaser">تيزر وإعلان تشويقي (Teaser)</option>
+                      <option value="clean">نسخة بدون نصوص (Clean Plate)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] text-neutral-400 mb-1">رابط بث الفيديو المباشر (Direct CDN / S3 / R2 URL):</label>
+                    <input type="url" id="deliverable-stream-url" placeholder="https://..." required class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2 text-xs text-white font-mono focus:border-brand-orange focus:outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] text-neutral-400 mb-1">مواصفات الملف والحجم:</label>
+                    <input type="text" id="deliverable-specs-badge" placeholder="مثال: 18.5 GB • 4K DCI ProRes 422 HQ" required class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2 text-xs text-white font-mono focus:border-brand-orange focus:outline-none" />
+                  </div>
+                </div>
+
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-hover text-white font-bold text-xs transition-colors flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                  <span>إضافة الفيديو إلى مساحة العميل</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Deliverables Overview List -->
+            <div id="admin-deliverables-list" class="space-y-3">
+              <!-- Injected deliverables -->
+            </div>
+          </div>
+
+          <!-- TAB 3: CLIENT FEEDBACK & APPROVALS -->
+          <div id="admin-tab-feedback" class="admin-tab-pane hidden space-y-4">
+            <div class="bg-carbon-900/60 rounded-2xl border border-neutral-800 p-4">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                  <i data-lucide="check-check" class="w-4 h-4 text-emerald-400"></i>
+                  سجل الاعتمادات وملاحظات التعديل المسجلة من العملاء
+                </h3>
+                <button onclick="exportFeedbackSummary()" class="px-3 py-1.5 rounded-lg bg-carbon-800 hover:bg-carbon-700 border border-neutral-700 text-neutral-300 text-xs font-mono flex items-center gap-1.5">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>نسخ التقرير</span>
+                </button>
+              </div>
+
+              <div id="admin-all-feedback-container" class="space-y-3 text-xs">
+                <!-- Dynamically populated feedbacks -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: SUPABASE & CLOUD DATABASE INTEGRATION -->
+          <div id="admin-tab-supabase" class="admin-tab-pane hidden space-y-5">
+            <div class="bg-carbon-900/80 rounded-2xl p-6 border border-neutral-800 space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    إعدادات المزامنة السحابية (Supabase PostgreSQL Integration)
+                  </h3>
+                  <p class="text-xs text-neutral-400 mt-1">
+                    يعمل النظام تلقائياً عبر التخزين المحلي الفائق <span class="text-brand-orange font-mono">localStorage</span>، وعند ربط مفاتيح Supabase يتم مزامنة كافة الفيديوهات والملاحظات سحابياً عبر الأجهزة فوراً.
+                  </p>
+                </div>
+                <div id="supabase-live-status" class="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 text-xs font-mono">
+                  ● LocalStorage Active
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-300 mb-1">SUPABASE URL:</label>
+                  <input type="text" id="supabase-url-input" placeholder="https://xyzproject.supabase.co" class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2.5 text-xs text-white font-mono focus:border-brand-orange focus:outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-300 mb-1">SUPABASE ANON KEY:</label>
+                  <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full bg-carbon-950 border border-neutral-700 rounded-lg p-2.5 text-xs text-white font-mono focus:border-brand-orange focus:outline-none" />
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 pt-2">
+                <button onclick="saveSupabaseSettings()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center gap-2">
+                  <i data-lucide="save" class="w-4 h-4"></i>
+                  <span>حفظ واختبار الاتصال السحابي</span>
+                </button>
+                <button onclick="copySupabaseSQLSchema()" class="px-4 py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 border border-neutral-700 text-neutral-300 text-xs font-mono flex items-center gap-1.5">
+                  <i data-lucide="code-2" class="w-4 h-4 text-brand-orange"></i>
+                  <span>نسخ كود SQL لإنشاء الجداول في Supabase</span>
+                </button>
+                <button onclick="resetDefaultDemoData()" class="px-4 py-2 rounded-xl bg-rose-950/30 hover:bg-rose-900/40 border border-rose-800/40 text-rose-400 text-xs font-mono flex items-center gap-1.5 mr-auto">
+                  <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                  <span>استعادة المشاريع التجريبية</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 6. MODAL: ONE-CLICK LUXURY EMAIL DRAFTER   -->
+  <!-- ========================================== -->
+  <div id="email-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel-elevated w-full max-w-xl rounded-2xl border border-neutral-800 p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+          <i data-lucide="mail" class="w-4 h-4 text-brand-orange"></i>
+          مسودة إيميل التسليم الفاخر للعميل
+        </h3>
+        <button onclick="closeEmailModal()" class="text-neutral-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div>
+          <label class="text-neutral-400">المستلم:</label>
+          <div id="email-modal-to" class="font-mono text-white bg-carbon-950 p-2 rounded border border-neutral-800 mt-1"></div>
+        </div>
+        <div>
+          <label class="text-neutral-400">الموضوع (Subject):</label>
+          <div id="email-modal-subject" class="font-bold text-white bg-carbon-950 p-2 rounded border border-neutral-800 mt-1"></div>
+        </div>
+        <div>
+          <label class="text-neutral-400">نص الرسالة:</label>
+          <div id="email-modal-body" class="whitespace-pre-line text-neutral-300 bg-carbon-950 p-3 rounded-lg border border-neutral-800 font-sans leading-relaxed max-h-56 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <a id="email-modal-mailto-link" href="#" target="_blank" class="flex-1 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-hover text-white font-bold text-xs text-center transition-colors flex items-center justify-center gap-2">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>فتح في تطبيق البريد الإلكتروني</span>
+        </a>
+        <button onclick="copyEmailDraftText()" class="px-4 py-2.5 rounded-xl bg-carbon-800 hover:bg-carbon-700 text-neutral-300 hover:text-white border border-neutral-700 text-xs font-mono transition-colors flex items-center gap-1.5">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span>نسخ النص</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 7. MODAL: APPROVAL CELEBRATION CERTIFICATE -->
+  <!-- ========================================== -->
+  <div id="approval-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+    <div class="glass-panel-elevated w-full max-w-lg rounded-3xl border border-emerald-500/40 p-8 text-center space-y-6 relative overflow-hidden shadow-2xl">
+      <div class="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
+        <i data-lucide="award" class="w-10 h-10"></i>
+      </div>
+
+      <div>
+        <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">CERTIFICATE OF FINAL APPROVAL</span>
+        <h2 class="text-2xl font-extrabold text-white mt-1">تم اعتماد النسخة النهائية بنجاح!</h2>
+        <p class="text-neutral-300 text-xs mt-2 leading-relaxed">
+          نشكركم على ثقتكم في <span class="font-montserrat font-bold text-white">TRADING STUDIOS</span>. تم تسجيل اعتمادكم الرسمي للمشروع، والنسخ جاهزة للتحميل الفوري بدقة 4K DCI ProRes.
+        </p>
+      </div>
+
+      <div class="bg-carbon-950/80 rounded-2xl p-4 border border-neutral-800 text-right text-xs font-mono space-y-1.5">
+        <div class="flex justify-between"><span class="text-neutral-500">رمز المشروع:</span><span id="cert-code" class="text-brand-orange font-bold">TRD-2026</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">العميل المعتمد:</span><span id="cert-client" class="text-white">شركة نيوم</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">وقت الاعتماد:</span><span id="cert-time" class="text-neutral-300">--:--:--</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">حالة الماستر:</span><span class="text-emerald-400 font-bold">READY FOR WORLDWIDE BROADCAST</span></div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="triggerActiveVideoDownload(); closeApprovalModal();" class="flex-1 py-3 rounded-xl bg-brand-orange hover:bg-brand-hover text-white font-bold text-xs transition-colors shadow-lg shadow-brand-orange/30 flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>تحميل ماستر 4K الآن</span>
+        </button>
+        <button onclick="closeApprovalModal()" class="px-5 py-3 rounded-xl bg-carbon-800 hover:bg-carbon-700 text-neutral-300 text-xs font-mono transition-colors">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 8. MODAL: SHORTCUTS GUIDE MODAL            -->
+  <!-- ========================================== -->
+  <div id="shortcuts-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel-elevated w-full max-w-md rounded-2xl border border-neutral-800 p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+          <i data-lucide="keyboard" class="w-4 h-4 text-brand-orange"></i>
+          اختصارات لوحة المفاتيح
+        </h3>
+        <button onclick="toggleShortcutsModal()" class="text-neutral-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs font-mono">
+        <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/80">
+          <span class="text-neutral-300">المسرح السينمائي (Theater Mode)</span>
+          <kbd class="px-2 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-brand-orange font-bold text-[11px]" id="modal-kbd-theater">⌘ + T</kbd>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/80">
+          <span class="text-neutral-300">تحميل ملف 4K الماستر المباشر</span>
+          <kbd class="px-2 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-brand-orange font-bold text-[11px]" id="modal-kbd-download">⌘ + D</kbd>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/80">
+          <span class="text-neutral-300">تشغيل / إيقاف مؤقت للفيديو</span>
+          <kbd class="px-2 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[11px]">Space</kbd>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/80">
+          <span class="text-neutral-300">الشاشة الكاملة للمشغل</span>
+          <kbd class="px-2 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[11px]">F</kbd>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/80">
+          <span class="text-neutral-300">تقديم / تأخير 5 ثواني</span>
+          <kbd class="px-2 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[11px]">← / →</kbd>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/80">
+          <span class="text-neutral-300">الخروج من النوافذ أو المسرح</span>
+          <kbd class="px-2 py-0.5 rounded bg-carbon-800 border border-neutral-700 text-white font-bold text-[11px]">ESC</kbd>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Toast Notification Banner -->
+  <div id="toast-banner" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="px-5 py-3 rounded-full bg-carbon-900/95 border border-brand-orange/40 text-white text-xs font-medium shadow-2xl flex items-center gap-2.5 backdrop-blur-xl">
+      <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
+      <span id="toast-text">تمت العملية بنجاح</span>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- APPLICATION SCRIPT & ARCHITECTURE LAYER    -->
+  <!-- ========================================== -->
+  <script>
+    /* ====================================================================
+       1. SUPABASE CLOUD & PERSISTENCE CONFIGURATION LAYER
+       ==================================================================== */
+    // Placeholders for Supabase credentials. If empty, seamlessly uses localStorage.
+    let SUPABASE_URL = localStorage.getItem('TRD_SUPABASE_URL') || '';
+    let SUPABASE_ANON_KEY = localStorage.getItem('TRD_SUPABASE_KEY') || '';
+    let supabaseClient = null;
+
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (e) {
+        console.warn('Supabase client init fallback:', e);
+      }
+    }
+
+    /* ====================================================================
+       2. MOCK & PERSISTENT DATA LAYER (LUXURY GCC / GLOBAL PROJECTS)
+       ==================================================================== */
+    const DEFAULT_PROJECTS = [
+      {
+        id: 'client_neom_2026',
+        accessCode: 'TRD-2026',
+        clientName: 'شركة نيوم الدولية (NEOM Horizons)',
+        clientEmail: 'media@neom.sa',
+        projectTitle: 'نيوم: الفيلم الوثائقي الدولي - النسخة السينمائية الكاملة',
+        deliveryDate: '2026-11-20',
+        status: 'جاهز للمراجعة والاعتماد',
+        isApproved: false,
+        deliverables: [
+          {
+            id: 'vid_neom_hero',
+            title: 'الفيلم الوثائقي الرئيسي (Hero Cinematic Cut)',
+            category: 'hero',
+            aspect: '16:9 DCI',
+            specs: '24.8 GB • 4K DCI ProRes 422 HQ • 59.94 fps',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            duration: '12:14',
+            thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80'
+          },
+          {
+            id: 'vid_neom_teaser',
+            title: 'التيزر التشويقي العالمي (Global Teaser 60s)',
+            category: 'teaser',
+            aspect: '2.39:1 Anamorphic',
+            specs: '4.2 GB • 4K ProRes 422 • 24.00 fps',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            duration: '01:00',
+            thumbnail: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80'
+          },
+          {
+            id: 'vid_neom_reel',
+            title: 'نسخة السوشيال ميديا العمودية (Vertical Reel 9:16)',
+            category: 'social',
+            aspect: '9:16 Vertical',
+            specs: '1.8 GB • 4K H.265 Master • 60 fps',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            duration: '00:30',
+            thumbnail: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=800&q=80'
+          },
+          {
+            id: 'vid_neom_clean',
+            title: 'نسخة بدون نصوص وجرافيك (Clean Plates Master)',
+            category: 'clean',
+            aspect: '16:9 DCI',
+            specs: '22.1 GB • 4K ProRes 4444 • 59.94 fps',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            duration: '12:14',
+            thumbnail: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=1200&q=80'
+          }
+        ],
+        feedback: [
+          {
+            id: 'fb_1',
+            timestamp: '00:01:24',
+            seconds: 84,
+            category: 'Color',
+            author: 'نيوم - الإشراف الفني',
+            text: 'يرجى رفع إضاءة الظلال قليلاً في مشهد وادي الديسة لتعزيز التفاصيل الصخرية.',
+            date: '2026-11-21 14:30',
+            resolved: false
+          },
+          {
+            id: 'fb_2',
+            timestamp: '00:03:15',
+            seconds: 195,
+            category: 'Audio',
+            author: 'مهندس صوت العميل',
+            text: 'المؤثر الصوتي للرياح ممتاز جداً، يرجى خفض مستوى الموسيقى الخلفية 1.5dB عند دخول التعليق الصوتي.',
+            date: '2026-11-21 16:10',
+            resolved: true
+          }
+        ]
+      },
+      {
+        id: 'client_mb_7788',
+        accessCode: 'TRD-7788',
+        clientName: 'مرسيدس-بنز الشرق الأوسط',
+        clientEmail: 'marketing@mercedes-benz-mena.com',
+        projectTitle: 'إطلاق Mercedes-AMG GT الجديد في الخليج - الحملة السينمائية',
+        deliveryDate: '2026-11-22',
+        status: 'قيد مراجعة المخرج',
+        isApproved: false,
+        deliverables: [
+          {
+            id: 'vid_mb_hero',
+            title: 'الفيلم الإعلاني الرسمي 90s - Master Film',
+            category: 'hero',
+            aspect: '2.39:1 Anamorphic',
+            specs: '16.4 GB • 4K Cinema Scope ProRes 422 HQ',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            duration: '01:30',
+            thumbnail: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80'
+          },
+          {
+            id: 'vid_mb_social',
+            title: 'ريلز إنستغرام وتيك توك (Vertical Cut 9:16)',
+            category: 'social',
+            aspect: '9:16 Vertical',
+            specs: '2.1 GB • 4K UHD 60fps',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            duration: '00:25',
+            thumbnail: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80'
+          }
+        ],
+        feedback: []
+      },
+      {
+        id: 'client_rb_9900',
+        accessCode: 'TRD-9900',
+        clientName: 'رد بول ميديا هاوس (Red Bull)',
+        clientEmail: 'productions@redbull.com',
+        projectTitle: 'سلسلة مغامرة الربع الخالي القصوى - الحلقة التجريبية',
+        deliveryDate: '2026-11-18',
+        status: 'معتمد بالكامل',
+        isApproved: true,
+        deliverables: [
+          {
+            id: 'vid_rb_hero',
+            title: 'الفيلم الكامل - Episode 01 Extreme Drift',
+            category: 'hero',
+            aspect: '16:9 DCI',
+            specs: '31.2 GB • 4K 120fps ProRes RAW Master',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            duration: '09:45',
+            thumbnail: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1200&q=80'
+          }
+        ],
+        feedback: [
+          {
+            id: 'fb_rb_1',
+            timestamp: '00:04:12',
+            seconds: 252,
+            category: 'Edit',
+            author: 'ريد بول للإنتاج',
+            text: 'تسلسل الدرون السريع FPV مذهل جداً، معتمد!',
+            date: '2026-11-19 11:00',
+            resolved: true
+          }
+        ]
+      }
+    ];
+
+    // Data Store Initialization
+    function getStoredProjects() {
+      const data = localStorage.getItem('TRD_STUDIOS_PROJECTS_V2');
+      if (data) {
+        try { return JSON.parse(data); } catch (e) { }
+      }
+      localStorage.setItem('TRD_STUDIOS_PROJECTS_V2', JSON.stringify(DEFAULT_PROJECTS));
+      return DEFAULT_PROJECTS;
+    }
+
+    function saveProjects(projects) {
+      localStorage.setItem('TRD_STUDIOS_PROJECTS_V2', JSON.stringify(projects));
+    }
+
+    let allProjects = getStoredProjects();
+    let currentClient = null; // 100% Data Isolation Active Client
+    let activeDeliverable = null;
+    let selectedCategoryFilter = 'all';
+    let currentCommentCategory = 'Color';
+    let isTheaterMode = false;
+    let audioFXEnabled = true;
+
+    /* ====================================================================
+       3. TACTILE AUDIO SYNTHESIS ENGINE (Web Audio API)
+       ==================================================================== */
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    const soundFX = {
+      click() {
+        if (!audioFXEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.04);
+        } catch(e){}
+      },
+      woosh() {
+        if (!audioFXEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(140, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.25);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.25);
+        } catch(e){}
+      },
+      success() {
+        if (!audioFXEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.08, now + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + i * 0.08);
+            osc.stop(now + i * 0.08 + 0.3);
+          });
+        } catch(e){}
+      }
+    };
+
+    function toggleAudioFX() {
+      audioFXEnabled = !audioFXEnabled;
+      const icon = document.getElementById('audio-icon');
+      if (audioFXEnabled) {
+        icon.setAttribute('data-lucide', 'volume-2');
+        showToast('تم تفعيل المؤثرات الصوتية');
+        soundFX.click();
+      } else {
+        icon.setAttribute('data-lucide', 'volume-x');
+        showToast('تم كتم المؤثرات الصوتية');
+      }
+      lucide.createIcons();
+    }
+
+    /* ====================================================================
+       4. SMART DEVICE DETECTION & ADAPTIVE UX ENGINE
+       ==================================================================== */
+    let detectedOS = 'unknown';
+    let isMac = false;
+    let isWindows = false;
+    let isTouch = false;
+
+    function initSmartDeviceEngine() {
+      const userAgent = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+      isMac = /Mac|iPod|iPhone|iPad/.test(platform) || /Macintosh/.test(userAgent);
+      isWindows = /Win/.test(platform) || /Windows/.test(userAgent);
+      isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth < 768;
+
+      const deviceStatusPill = document.getElementById('device-status-pill');
+      const deviceIcon = document.getElementById('device-icon');
+      const deviceModeText = document.getElementById('device-mode-text');
+      const osExtraAction = document.getElementById('os-extra-action');
+
+      // Check Wide Color Gamut (Display P3)
+      const hasP3 = window.matchMedia && window.matchMedia('(color-gamut: p3)').matches;
+      const colorProfileTag = hasP3 ? ' • Retina P3' : ' • Rec.709';
+
+      if (isMac) {
+        detectedOS = 'macOS';
+        deviceIcon.innerHTML = `<i data-lucide="apple" class="w-3.5 h-3.5"></i>`;
+        deviceModeText.textContent = `Mac Pro Mode${colorProfileTag}`;
+        
+        // Setup macOS keyboard badges
+        document.getElementById('kbd-theater').textContent = '⌘ + T';
+        document.getElementById('kbd-download').textContent = '⌘ + D';
+        document.getElementById('modal-kbd-theater').textContent = '⌘ + T';
+        document.getElementById('modal-kbd-download').textContent = '⌘ + D';
+        document.getElementById('theater-exit-hint').textContent = 'اضغط ESC أو ⌘T للخروج من وضع المسرح السينمائي';
+
+        osExtraAction.innerHTML = `
+          <span class="text-neutral-400 text-[10px] flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            معايرة أبل سينما المعتمدة (Apple Pro Workflow)
+          </span>
+        `;
+      } else if (isWindows) {
+        detectedOS = 'Windows';
+        deviceIcon.innerHTML = `<i data-lucide="monitor" class="w-3.5 h-3.5"></i>`;
+        deviceModeText.textContent = 'Windows Pro Mode • IDM Ready';
+
+        // Setup Windows keyboard badges
+        document.getElementById('kbd-theater').textContent = 'Ctrl + T';
+        document.getElementById('kbd-download').textContent = 'Ctrl + D';
+        document.getElementById('modal-kbd-theater').textContent = 'Ctrl + T';
+        document.getElementById('modal-kbd-download').textContent = 'Ctrl + D';
+        document.getElementById('theater-exit-hint').textContent = 'اضغط ESC أو Ctrl+T للخروج من وضع المسرح';
+
+        // IDM Batch Download Generator Button
+        osExtraAction.innerHTML = `
+          <button onclick="copyIDMBatchLinks()" class="px-2 py-0.5 rounded bg-carbon-800 hover:bg-carbon-700 text-brand-orange border border-neutral-700 text-[10px] flex items-center gap-1 transition-colors">
+            <i data-lucide="download-cloud" class="w-3 h-3"></i>
+            <span>نسخ روابط التحميل لبرنامج IDM</span>
+          </button>
+        `;
+      } else {
+        detectedOS = 'Mobile/Touch';
+        deviceIcon.innerHTML = `<i data-lucide="smartphone" class="w-3.5 h-3.5"></i>`;
+        deviceModeText.textContent = 'Touch Adaptive Mode';
+        document.getElementById('os-shortcuts-bar').classList.add('!hidden');
+      }
+
+      lucide.createIcons();
+    }
+
+    // Windows IDM links copy helper
+    function copyIDMBatchLinks() {
+      if (!currentClient || !currentClient.deliverables) {
+        showToast('يرجى الدخول للمشروع أولاً لنسخ الروابط');
+        return;
+      }
+      const links = currentClient.deliverables.map(d => d.downloadUrl).join('\n');
+      navigator.clipboard.writeText(links).then(() => {
+        showToast('تم نسخ روابط الحزمة بالكامل جاهزة للصق في IDM!');
+        soundFX.click();
+      });
+    }
+
+    /* ====================================================================
+       5. CLIENT ACCESS GATE & DATA ISOLATION LOGIC
+       ==================================================================== */
+    function checkMagicLinkAuth() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const codeParam = urlParams.get('code');
+      if (codeParam) {
+        authenticateAccessCode(codeParam.trim());
+      } else {
+        const savedCode = sessionStorage.getItem('TRD_ACTIVE_CLIENT_CODE');
+        if (savedCode) {
+          authenticateAccessCode(savedCode);
+        } else {
+          showAuthGate();
+        }
+      }
+    }
+
+    function handleClientLogin(e) {
+      if (e) e.preventDefault();
+      const codeInput = document.getElementById('client-access-code');
+      const code = codeInput.value.trim().toUpperCase();
+      authenticateAccessCode(code);
+    }
+
+    function quickLoginDemo(code) {
+      document.getElementById('client-access-code').value = code;
+      authenticateAccessCode(code);
+    }
+
+    function authenticateAccessCode(code) {
+      allProjects = getStoredProjects();
+      const client = allProjects.find(p => p.accessCode.toUpperCase() === code.toUpperCase());
+
+      if (client) {
+        soundFX.woosh();
+        currentClient = client;
+        sessionStorage.setItem('TRD_ACTIVE_CLIENT_CODE', client.accessCode);
+
+        // Hide auth error if any
+        document.getElementById('auth-error-msg').classList.add('hidden');
+
+        // Transition views
+        document.getElementById('auth-gate-view').classList.add('hidden');
+        document.getElementById('client-workspace-view').classList.remove('hidden');
+
+        // Update URL cleanly without reloading
+        const url = new URL(window.location);
+        url.searchParams.set('code', client.accessCode);
+        window.history.replaceState({}, '', url);
+
+        // Header updates
+        document.getElementById('header-client-info').classList.remove('hidden');
+        document.getElementById('header-client-name').textContent = client.clientName;
+        document.getElementById('header-project-code').textContent = client.accessCode;
+        document.getElementById('logout-btn').classList.remove('hidden');
+        document.getElementById('logout-btn').classList.add('flex');
+
+        renderClientWorkspace();
+        showToast(`مرحباً بكم: ${client.clientName}`);
+      } else {
+        const err = document.getElementById('auth-error-msg');
+        err.classList.remove('hidden');
+        gsap.fromTo('#client-login-form', { x: -8 }, { x: 8, duration: 0.08, repeat: 4, yoyo: true });
+      }
+    }
+
+    function logoutClient() {
+      sessionStorage.removeItem('TRD_ACTIVE_CLIENT_CODE');
+      currentClient = null;
+      activeDeliverable = null;
+
+      const url = new URL(window.location);
+      url.searchParams.delete('code');
+      window.history.replaceState({}, '', url);
+
+      document.getElementById('header-client-info').classList.add('hidden');
+      document.getElementById('logout-btn').classList.add('hidden');
+      document.getElementById('logout-btn').classList.remove('flex');
+      
+      showAuthGate();
+      showToast('تم تسجيل الخروج بنجاح');
+    }
+
+    function showAuthGate() {
+      document.getElementById('client-workspace-view').classList.add('hidden');
+      document.getElementById('auth-gate-view').classList.remove('hidden');
+    }
+
+    /* ====================================================================
+       6. WORKSPACE RENDERING & 4K CINEMA PLAYER ENGINE
+       ==================================================================== */
+    function renderClientWorkspace() {
+      if (!currentClient) return;
+
+      // Project metadata update
+      document.getElementById('client-project-title').textContent = currentClient.projectTitle;
+      document.getElementById('client-name-display').textContent = currentClient.clientName;
+      document.getElementById('client-delivery-date').textContent = currentClient.deliveryDate;
+      document.getElementById('client-files-count').textContent = `${currentClient.deliverables.length} نسخ 4K`;
+      document.getElementById('project-code-badge').textContent = currentClient.accessCode;
+      
+      const statusPill = document.getElementById('project-deliverable-status');
+      if (currentClient.isApproved) {
+        statusPill.textContent = 'معتمد بالكامل وجاهز للعرض العالمي';
+        statusPill.parentElement.className = 'px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold flex items-center gap-1.5';
+      } else {
+        statusPill.textContent = currentClient.status;
+      }
+
+      // Deliverables list setup
+      if (currentClient.deliverables && currentClient.deliverables.length > 0) {
+        if (!activeDeliverable) {
+          activeDeliverable = currentClient.deliverables[0];
+        }
+        loadVideoDeliverable(activeDeliverable);
+        renderDeliverablesGrid();
+      }
+
+      // Render timestamped notes
+      renderCommentsList();
+      lucide.createIcons();
+    }
+
+    function loadVideoDeliverable(deliverable) {
+      activeDeliverable = deliverable;
+      const video = document.getElementById('main-video-element');
+      const fallbackCanvas = document.getElementById('fallback-canvas');
+
+      // Update titles and specs
+      document.getElementById('active-video-title').textContent = deliverable.title;
+      document.getElementById('active-video-specs').textContent = deliverable.specs;
+      document.getElementById('player-aspect-badge').textContent = deliverable.aspect || '16:9 DCI';
+
+      // Load stream
+      video.pause();
+      video.src = deliverable.streamUrl;
+      video.load();
+
+      // Show big play button
+      document.getElementById('big-play-btn').classList.remove('opacity-0', 'pointer-events-none');
+      document.getElementById('btn-play-icon').setAttribute('data-lucide', 'play');
+
+      // Setup timeline markers
+      renderTimelineMarkers();
+      lucide.createIcons();
+    }
+
+    // Video Player Event Handlers
+    function togglePlayPause() {
+      const video = document.getElementById('main-video-element');
+      const bigPlayBtn = document.getElementById('big-play-btn');
+      const playIcon = document.getElementById('btn-play-icon');
+
+      if (video.paused || video.ended) {
+        video.play().then(() => {
+          bigPlayBtn.classList.add('opacity-0', 'pointer-events-none');
+          playIcon.setAttribute('data-lucide', 'pause');
+          soundFX.click();
+        }).catch(err => {
+          console.warn('Playback error, engaging fallback visualizer:', err);
+          startFallbackCanvas();
+        });
+      } else {
+        video.pause();
+        bigPlayBtn.classList.remove('opacity-0', 'pointer-events-none');
+        playIcon.setAttribute('data-lucide', 'play');
+        soundFX.click();
+      }
+      lucide.createIcons();
+    }
+
+    function onVideoMetadataLoaded() {
+      const video = document.getElementById('main-video-element');
+      document.getElementById('duration-timecode').textContent = formatTimecode(video.duration || 0);
+      document.getElementById('video-scrubber').max = video.duration || 100;
+    }
+
+    function onVideoTimeUpdate() {
+      const video = document.getElementById('main-video-element');
+      const scrubber = document.getElementById('video-scrubber');
+      const currentTimecode = document.getElementById('current-timecode');
+
+      if (!scrubber.matches(':active')) {
+        scrubber.value = video.currentTime;
+      }
+      currentTimecode.textContent = formatTimecode(video.currentTime);
+      document.getElementById('stamp-capture-display').textContent = formatTimecode(video.currentTime);
+    }
+
+    function onVideoEnded() {
+      document.getElementById('big-play-btn').classList.remove('opacity-0', 'pointer-events-none');
+      document.getElementById('btn-play-icon').setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+    }
+
+    function onScrubVideo(val) {
+      const video = document.getElementById('main-video-element');
+      video.currentTime = val;
+    }
+
+    function seekRelative(deltaSeconds) {
+      const video = document.getElementById('main-video-element');
+      video.currentTime = Math.max(0, Math.min(video.duration || 100, video.currentTime + deltaSeconds));
+      soundFX.click();
+    }
+
+    function onVolumeChange(val) {
+      const video = document.getElementById('main-video-element');
+      video.volume = val;
+      const volIcon = document.getElementById('volume-icon');
+      if (val == 0) {
+        volIcon.setAttribute('data-lucide', 'volume-x');
+      } else if (val < 0.5) {
+        volIcon.setAttribute('data-lucide', 'volume-1');
+      } else {
+        volIcon.setAttribute('data-lucide', 'volume-2');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleMuteVideo() {
+      const video = document.getElementById('main-video-element');
+      video.muted = !video.muted;
+      const volIcon = document.getElementById('volume-icon');
+      volIcon.setAttribute('data-lucide', video.muted ? 'volume-x' : 'volume-2');
+      lucide.createIcons();
+    }
+
+    function formatTimecode(totalSeconds) {
+      if (isNaN(totalSeconds) || totalSeconds < 0) totalSeconds = 0;
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = Math.floor(totalSeconds % 60);
+      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    /* ====================================================================
+       7. CINEMA THEATER MODE ENGINE
+       ==================================================================== */
+    function toggleTheaterMode() {
+      isTheaterMode = !isTheaterMode;
+      const body = document.body;
+      const wrapper = document.getElementById('video-theater-wrapper');
+      const ambientGlow = document.getElementById('ambient-video-glow');
+
+      if (isTheaterMode) {
+        body.classList.add('in-theater-mode');
+        wrapper.classList.add('theater-focus');
+        ambientGlow.classList.remove('opacity-0');
+        ambientGlow.classList.add('opacity-100');
+        soundFX.woosh();
+        showToast('تم تفعيل وضع المسرح السينمائي (Cinema Mode)');
+      } else {
+        body.classList.remove('in-theater-mode');
+        wrapper.classList.remove('theater-focus');
+        ambientGlow.classList.add('opacity-0');
+        ambientGlow.classList.remove('opacity-100');
+      }
+    }
+
+    function toggleFullscreen() {
+      const playerBox = document.getElementById('main-player-box');
+      if (!document.fullscreenElement) {
+        playerBox.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    /* ====================================================================
+       8. TIMESTAMPED CLIENT FEEDBACK & REVISION ENGINE
+       ==================================================================== */
+    function captureCurrentPlayheadTime() {
+      const video = document.getElementById('main-video-element');
+      const curTime = formatTimecode(video.currentTime || 0);
+      document.getElementById('stamp-capture-display').textContent = curTime;
+      document.getElementById('comment-text-input').focus();
+      soundFX.click();
+      showToast(`تم التقاط التوقيت: ${curTime}`);
+    }
+
+    function selectCommentCategory(cat) {
+      currentCommentCategory = cat;
+      const pills = document.querySelectorAll('.cat-pill');
+      pills.forEach(p => {
+        p.className = 'cat-pill px-2 py-1 rounded bg-carbon-800 border border-neutral-700 text-neutral-400 hover:text-white whitespace-nowrap';
+      });
+      event.target.className = 'cat-pill px-2 py-1 rounded bg-brand-orange/20 border border-brand-orange text-brand-orange whitespace-nowrap';
+      soundFX.click();
+    }
+
+    function submitClientComment() {
+      if (!currentClient) return;
+      const textInput = document.getElementById('comment-text-input');
+      const text = textInput.value.trim();
+      if (!text) {
+        showToast('يرجى كتابة نص الملاحظة');
+        return;
+      }
+
+      const video = document.getElementById('main-video-element');
+      const seconds = Math.floor(video.currentTime || 0);
+      const timestamp = formatTimecode(seconds);
+
+      const newComment = {
+        id: 'fb_' + Date.now(),
+        timestamp: timestamp,
+        seconds: seconds,
+        category: currentCommentCategory,
+        author: currentClient.clientName,
+        text: text,
+        date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+        resolved: false
+      };
+
+      if (!currentClient.feedback) currentClient.feedback = [];
+      currentClient.feedback.unshift(newComment);
+
+      // Save to allProjects
+      const pIndex = allProjects.findIndex(p => p.id === currentClient.id);
+      if (pIndex !== -1) {
+        allProjects[pIndex] = currentClient;
+        saveProjects(allProjects);
+      }
+
+      textInput.value = '';
+      renderCommentsList();
+      renderTimelineMarkers();
+      soundFX.success();
+      showToast('تم حفظ ملاحظتك على الفيديو بنجاح');
+    }
+
+    function renderCommentsList() {
+      const list = document.getElementById('comments-list');
+      const badge = document.getElementById('feedback-count-badge');
+      const comments = currentClient && currentClient.feedback ? currentClient.feedback : [];
+      badge.textContent = `${comments.length} ملاحظات`;
+
+      if (comments.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-8 text-neutral-500 text-xs font-mono">
+            لا توجد ملاحظات مسجلة بعد. يمكنك إيقاف الفيديو عند أي لقطة وتسجيل ملاحظتك فوراً.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = comments.map(c => `
+        <div class="p-3 rounded-xl bg-carbon-900 border border-neutral-800/80 hover:border-brand-orange/40 transition-all space-y-1.5 group">
+          <div class="flex items-center justify-between">
+            <button onclick="seekVideoToSecond(${c.seconds})" class="px-2 py-0.5 rounded bg-brand-orange/15 hover:bg-brand-orange/25 text-brand-orange font-mono font-bold text-[11px] flex items-center gap-1" title="الانتقال الفوري للقطة">
+              <i data-lucide="play" class="w-2.5 h-2.5 fill-current"></i>
+              <span>${c.timestamp}</span>
+            </button>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-carbon-800 text-neutral-400 font-mono">
+              ${c.category}
+            </span>
+          </div>
+          <p class="text-neutral-200 text-xs leading-relaxed select-text">${escapeHtml(c.text)}</p>
+          <div class="flex items-center justify-between text-[10px] text-neutral-500 font-mono pt-1">
+            <span>${c.author || 'العميل'}</span>
+            <span>${c.date}</span>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function seekVideoToSecond(sec) {
+      const video = document.getElementById('main-video-element');
+      video.currentTime = sec;
+      video.play().catch(()=>{});
+      soundFX.click();
+      showToast(`تم الانتقال إلى التوقيت ${formatTimecode(sec)}`);
+    }
+
+    function renderTimelineMarkers() {
+      const markerContainer = document.getElementById('timeline-comment-markers');
+      const video = document.getElementById('main-video-element');
+      const duration = video.duration || 100;
+      const comments = currentClient && currentClient.feedback ? currentClient.feedback : [];
+
+      markerContainer.innerHTML = comments.map(c => {
+        const percent = Math.min(100, Math.max(0, (c.seconds / duration) * 100));
+        return `<span style="left: ${percent}%;" class="absolute top-0 bottom-0 w-1 bg-brand-orange rounded-full shadow-[0_0_6px_#FF5500]" title="${c.timestamp} - ${c.category}"></span>`;
+      }).join('');
+    }
+
+    /* ====================================================================
+       9. DELIVERABLES GRID & 3D PERSPECTIVE TILT
+       ==================================================================== */
+    function filterDeliverables() {
+      renderDeliverablesGrid();
+    }
+
+    function setFilterCategory(cat) {
+      selectedCategoryFilter = cat;
+      const tabs = document.querySelectorAll('.filter-tab-btn');
+      tabs.forEach(t => {
+        t.className = 'filter-tab-btn px-3 py-1 rounded-lg text-neutral-400 hover:text-white';
+      });
+      event.target.className = 'filter-tab-btn px-3 py-1 rounded-lg bg-brand-orange text-white font-medium';
+      renderDeliverablesGrid();
+    }
+
+    function renderDeliverablesGrid() {
+      const grid = document.getElementById('deliverables-grid');
+      const query = (document.getElementById('deliverables-search').value || '').trim().toLowerCase();
+      
+      if (!currentClient || !currentClient.deliverables) {
+        grid.innerHTML = '';
+        return;
+      }
+
+      let filtered = currentClient.deliverables.filter(item => {
+        const matchesCat = (selectedCategoryFilter === 'all') || (item.category === selectedCategoryFilter);
+        const matchesQuery = !query || item.title.toLowerCase().includes(query) || item.specs.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-neutral-500 font-mono text-xs">
+            لا توجد نسخ مطابقة لخيارات البحث المحددة.
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => `
+        <div class="tilt-card glass-panel rounded-2xl p-4 border border-neutral-800/80 hover:border-brand-orange/50 transition-all flex flex-col justify-between group relative overflow-hidden" onmousemove="handleCardTilt(event, this)" onmouseleave="resetCardTilt(this)">
+          
+          <div>
+            <!-- Video Thumbnail / Preview Container -->
+            <div class="relative aspect-video rounded-xl overflow-hidden bg-carbon-950 mb-3 border border-white/5">
+              <img src="${item.thumbnail || 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=800&q=80'}" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
+              
+              <!-- Badges -->
+              <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-md text-[10px] font-mono text-brand-orange font-bold border border-brand-orange/30">
+                4K MASTER
+              </span>
+              <span class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-md text-[10px] font-mono text-neutral-300">
+                ${item.aspect || '16:9'}
+              </span>
+              <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/75 backdrop-blur-md text-[10px] font-mono text-neutral-300">
+                ${item.duration || '00:00'}
+              </span>
+
+              <!-- Hover Quick Play Button -->
+              <button onclick="playSpecificDeliverable('${item.id}')" class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[1px]">
+                <div class="w-12 h-12 rounded-full bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-brand-orange/40 hover:scale-110 transition-transform">
+                  <i data-lucide="play" class="w-6 h-6 fill-white translate-x-0.5"></i>
+                </div>
+              </button>
+            </div>
+
+            <!-- Title & Specs -->
+            <h3 class="font-bold text-white text-sm group-hover:text-brand-orange transition-colors">${escapeHtml(item.title)}</h3>
+            <p class="text-[11px] font-mono text-neutral-400 mt-1">${escapeHtml(item.specs)}</p>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="mt-4 pt-3 border-t border-neutral-800/80 flex items-center justify-between gap-2">
+            <button onclick="playSpecificDeliverable('${item.id}')" class="px-3 py-1.5 rounded-lg bg-carbon-800 hover:bg-carbon-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors">
+              <i data-lucide="film" class="w-3.5 h-3.5 text-brand-orange"></i>
+              <span>معاينة بالمشغل</span>
+            </button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="copyDeliverableLink('${item.downloadUrl}')" class="p-1.5 rounded-lg bg-carbon-900 hover:bg-carbon-800 text-neutral-400 hover:text-white border border-neutral-800 transition-colors" title="نسخ رابط التحميل">
+                <i data-lucide="link" class="w-3.5 h-3.5"></i>
+              </button>
+              <a href="${item.downloadUrl}" target="_blank" download class="px-3 py-1.5 rounded-lg bg-brand-orange hover:bg-brand-hover text-white text-xs font-bold transition-colors flex items-center gap-1 shadow-sm shadow-brand-orange/30">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>تحميل</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function playSpecificDeliverable(id) {
+      if (!currentClient) return;
+      const del = currentClient.deliverables.find(d => d.id === id);
+      if (del) {
+        loadVideoDeliverable(del);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast(`جاري تشغيل: ${del.title}`);
+        soundFX.woosh();
+      }
+    }
+
+    // 3D Tilt Card Interaction
+    function handleCardTilt(e, card) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -7;
+      const rotateY = ((x - centerX) / centerX) * 7;
+      card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+    }
+
+    function resetCardTilt(card) {
+      card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+    }
+
+    /* ====================================================================
+       10. DOWNLOAD & EXPORT CONTROLS
+       ==================================================================== */
+    function triggerActiveVideoDownload() {
+      if (!activeDeliverable) {
+        showToast('يرجى اختيار مقطع فيديو أولاً');
+        return;
+      }
+      soundFX.click();
+      showToast(`جاري بدء تنزيل ملف الماستر 4K: ${activeDeliverable.title}`);
+      
+      // Simulate/trigger download anchor
+      const a = document.createElement('a');
+      a.href = activeDeliverable.downloadUrl;
+      a.download = activeDeliverable.title.replace(/\s+/g, '_') + '_4K_ProRes.mp4';
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function copyDirectVideoLink() {
+      if (!activeDeliverable) return;
+      navigator.clipboard.writeText(activeDeliverable.downloadUrl).then(() => {
+        showToast('تم نسخ الرابط المباشر للملف 4K بنجاح');
+        soundFX.click();
+      });
+    }
+
+    function copyDeliverableLink(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('تم نسخ رابط التحميل');
+        soundFX.click();
+      });
+    }
+
+    /* ====================================================================
+       11. CLIENT FINAL APPROVAL SYSTEM & CELEBRATION
+       ==================================================================== */
+    function approveFinalCutModal() {
+      if (!currentClient) return;
+
+      // Mark client project as approved
+      currentClient.isApproved = true;
+      currentClient.status = 'معتمد بالكامل وجاهز للعرض العالمي';
+      const pIndex = allProjects.findIndex(p => p.id === currentClient.id);
+      if (pIndex !== -1) {
+        allProjects[pIndex] = currentClient;
+        saveProjects(allProjects);
+      }
+
+      // Populate certificate modal
+      document.getElementById('cert-code').textContent = currentClient.accessCode;
+      document.getElementById('cert-client').textContent = currentClient.clientName;
+      document.getElementById('cert-time').textContent = new Date().toLocaleString('ar-SA');
+
+      document.getElementById('approval-modal').classList.remove('hidden');
+
+      // Trigger Luxury Celebration Confetti
+      soundFX.success();
+      try {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#FF5500', '#FFFFFF', '#10B981', '#E5A93C']
+        });
+      } catch(e){}
+
+      renderClientWorkspace();
+    }
+
+    function closeApprovalModal() {
+      document.getElementById('approval-modal').classList.add('hidden');
+    }
+
+    /* ====================================================================
+       12. FULL ADMIN DASHBOARD LOGIC
+       ==================================================================== */
+    let isAdminUnlocked = false;
+
+    function openAdminModal() {
+      soundFX.woosh();
+      document.getElementById('admin-modal').classList.remove('hidden');
+      if (isAdminUnlocked) {
+        renderAdminDashboard();
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.add('hidden');
+    }
+
+    function handleAdminAuth(e) {
+      if (e) e.preventDefault();
+      const pass = document.getElementById('admin-password-input').value;
+      if (pass === 'admin123') {
+        isAdminUnlocked = true;
+        document.getElementById('admin-login-lock').classList.add('hidden');
+        document.getElementById('admin-unlocked-content').classList.remove('hidden');
+        soundFX.success();
+        renderAdminDashboard();
+        showToast('تم الدخول إلى لوحة الإدارة');
+      } else {
+        document.getElementById('admin-auth-err').classList.remove('hidden');
+        gsap.fromTo('#admin-password-input', { x: -6 }, { x: 6, duration: 0.08, repeat: 4, yoyo: true });
+      }
+    }
+
+    function switchAdminTab(tabName) {
+      soundFX.click();
+      const tabs = ['clients', 'deliverables', 'feedback', 'supabase'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const pane = document.getElementById(`admin-tab-${t}`);
+        if (t === tabName) {
+          btn.className = 'admin-tab active pb-3 px-3 text-brand-orange border-b-2 border-brand-orange flex items-center gap-1.5 whitespace-nowrap';
+          pane.classList.remove('hidden');
+        } else {
+          btn.className = 'admin-tab pb-3 px-3 text-neutral-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap';
+          pane.classList.add('hidden');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function renderAdminDashboard() {
+      allProjects = getStoredProjects();
+      renderAdminClientsTable();
+      populateAdminClientSelect();
+      renderAdminDeliverablesList();
+      renderAdminFeedbacks();
+      generateNewClientCode();
+      lucide.createIcons();
+    }
+
+    function generateNewClientCode() {
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('new-client-code').value = `TRD-${randomNum}`;
+    }
+
+    function handleCreateClient(e) {
+      if (e) e.preventDefault();
+      const name = document.getElementById('new-client-name').value.trim();
+      const title = document.getElementById('new-project-title').value.trim();
+      const email = document.getElementById('new-client-email').value.trim();
+      const code = document.getElementById('new-client-code').value.trim();
+
+      const newProj = {
+        id: 'client_' + Date.now(),
+        accessCode: code,
+        clientName: name,
+        clientEmail: email,
+        projectTitle: title,
+        deliveryDate: new Date().toISOString().slice(0, 10),
+        status: 'جاهز للمراجعة 4K',
+        isApproved: false,
+        deliverables: [
+          {
+            id: 'vid_' + Date.now(),
+            title: title + ' (الماستر الأولي)',
+            category: 'hero',
+            aspect: '16:9 DCI',
+            specs: '18.5 GB • 4K ProRes 422 HQ',
+            streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            downloadUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            duration: '05:00',
+            thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+          }
+        ],
+        feedback: []
+      };
+
+      allProjects.unshift(newProj);
+      saveProjects(allProjects);
+
+      document.getElementById('new-client-name').value = '';
+      document.getElementById('new-project-title').value = '';
+      document.getElementById('new-client-email').value = '';
+      generateNewClientCode();
+
+      renderAdminClientsTable();
+      populateAdminClientSelect();
+      soundFX.success();
+      showToast(`تم إنشاء مشروع العميل الجديد: ${code}`);
+    }
+
+    function renderAdminClientsTable() {
+      const tbody = document.getElementById('admin-clients-tbody');
+      const countEl = document.getElementById('admin-client-count');
+      countEl.textContent = `${allProjects.length} عملاء`;
+
+      tbody.innerHTML = allProjects.map(p => `
+        <tr class="hover:bg-carbon-900/60 transition-colors">
+          <td class="p-3 text-brand-orange font-bold">${p.accessCode}</td>
+          <td class="p-3 font-sans">
+            <div class="font-bold text-white">${escapeHtml(p.clientName)}</div>
+            <div class="text-[10px] text-neutral-400">${escapeHtml(p.projectTitle)}</div>
+          </td>
+          <td class="p-3 text-neutral-400">${p.clientEmail || '-'}</td>
+          <td class="p-3">${p.deliverables ? p.deliverables.length : 0} مقاطع</td>
+          <td class="p-3 text-center">
+            <button onclick="openClientEmailModal('${p.id}')" class="px-2.5 py-1 rounded bg-brand-orange/20 hover:bg-brand-orange/30 text-brand-orange border border-brand-orange/40 text-[11px] font-sans font-bold transition-colors inline-flex items-center gap-1">
+              <i data-lucide="mail" class="w-3 h-3"></i>
+              <span>إرسال بريد تسليم</span>
+            </button>
+          </td>
+          <td class="p-3 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="authenticateAccessCode('${p.accessCode}'); closeAdminModal();" class="p-1 rounded bg-carbon-800 hover:bg-carbon-700 text-neutral-300 hover:text-white" title="معاينة كعميل">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="deleteClientProject('${p.id}')" class="p-1 rounded bg-rose-950/40 hover:bg-rose-900 text-rose-400 hover:text-rose-200" title="حذف">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function deleteClientProject(id) {
+      if (!confirm('هل أنت متأكد من حذف هذا العميل وكافة فيديوهاته وملاحظاته؟')) return;
+      allProjects = allProjects.filter(p => p.id !== id);
+      saveProjects(allProjects);
+      renderAdminClientsTable();
+      populateAdminClientSelect();
+      showToast('تم حذف العميل');
+    }
+
+    function populateAdminClientSelect() {
+      const select = document.getElementById('deliverable-target-client');
+      select.innerHTML = allProjects.map(p => `
+        <option value="${p.id}">${escapeHtml(p.clientName)} (${p.accessCode})</option>
+      `).join('');
+    }
+
+    function handleAddDeliverable(e) {
+      if (e) e.preventDefault();
+      const clientId = document.getElementById('deliverable-target-client').value;
+      const title = document.getElementById('deliverable-title').value.trim();
+      const category = document.getElementById('deliverable-category').value;
+      const streamUrl = document.getElementById('deliverable-stream-url').value.trim();
+      const specs = document.getElementById('deliverable-specs-badge').value.trim();
+
+      const client = allProjects.find(p => p.id === clientId);
+      if (!client) return;
+
+      const newDel = {
+        id: 'vid_' + Date.now(),
+        title: title,
+        category: category,
+        aspect: category === 'social' ? '9:16 Vertical' : (category === 'teaser' ? '2.39:1 Anamorphic' : '16:9 DCI'),
+        specs: specs,
+        streamUrl: streamUrl,
+        downloadUrl: streamUrl,
+        duration: '03:30',
+        thumbnail: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=800&q=80'
+      };
+
+      if (!client.deliverables) client.deliverables = [];
+      client.deliverables.push(newDel);
+      saveProjects(allProjects);
+
+      document.getElementById('deliverable-title').value = '';
+      document.getElementById('deliverable-stream-url').value = '';
+      document.getElementById('deliverable-specs-badge').value = '';
+
+      renderAdminDeliverablesList();
+      renderAdminClientsTable();
+      soundFX.success();
+      showToast('تمت إضافة الفيديو بنجاح لمساحة العميل');
+    }
+
+    function renderAdminDeliverablesList() {
+      const container = document.getElementById('admin-deliverables-list');
+      let html = '';
+      allProjects.forEach(client => {
+        if (!client.deliverables || client.deliverables.length === 0) return;
+        html += `
+          <div class="p-3 bg-carbon-900 rounded-xl border border-neutral-800">
+            <div class="text-xs font-bold text-white mb-2 flex items-center justify-between">
+              <span>${escapeHtml(client.clientName)} (${client.accessCode})</span>
+              <span class="text-neutral-500 font-mono text-[10px]">${client.deliverables.length} مقاطع</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              ${client.deliverables.map(d => `
+                <div class="flex items-center justify-between p-2 rounded bg-carbon-950 border border-neutral-800/60">
+                  <span class="text-neutral-200 font-sans">${escapeHtml(d.title)}</span>
+                  <span class="text-brand-orange text-[10px]">${escapeHtml(d.specs)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html || '<div class="text-neutral-500 text-xs">لا توجد مقاطع مضافة.</div>';
+    }
+
+    function renderAdminFeedbacks() {
+      const container = document.getElementById('admin-all-feedback-container');
+      let allFbs = [];
+      allProjects.forEach(p => {
+        if (p.feedback && p.feedback.length > 0) {
+          p.feedback.forEach(fb => {
+            allFbs.push({ ...fb, clientName: p.clientName, clientCode: p.accessCode, isApproved: p.isApproved });
+          });
+        }
+      });
+
+      if (allFbs.length === 0) {
+        container.innerHTML = '<div class="text-neutral-500 text-center py-6">لا توجد ملاحظات مسجلة من العملاء حتى الآن.</div>';
+        return;
+      }
+
+      container.innerHTML = allFbs.map(fb => `
+        <div class="p-3 rounded-xl bg-carbon-950 border border-neutral-800 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white font-sans">${escapeHtml(fb.clientName)} <span class="text-brand-orange font-mono">(${fb.clientCode})</span></span>
+            <span class="px-2 py-0.5 rounded bg-carbon-800 text-neutral-300 font-mono text-[10px]">${fb.timestamp}</span>
+          </div>
+          <p class="text-neutral-300 font-sans text-xs">${escapeHtml(fb.text)}</p>
+          <div class="text-[10px] text-neutral-500 font-mono flex items-center justify-between pt-1">
+            <span>التصنيف: ${fb.category}</span>
+            <span>${fb.date}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function exportFeedbackSummary() {
+      let report = `تقرير ملاحظات واستلام عملاء TRADING STUDIOS:\n\n`;
+      allProjects.forEach(p => {
+        report += `المشروع: ${p.clientName} [${p.accessCode}]\n`;
+        report += `حالة الاعتماد: ${p.isApproved ? 'معتمد' : 'قيد المراجعة'}\n`;
+        if (p.feedback && p.feedback.length > 0) {
+          p.feedback.forEach(fb => {
+            report += `  - [${fb.timestamp}] (${fb.category}) ${fb.text}\n`;
+          });
+        } else {
+          report += `  - لا توجد ملاحظات\n`;
+        }
+        report += '\n-------------------------\n\n';
+      });
+
+      navigator.clipboard.writeText(report).then(() => {
+        showToast('تم نسخ تقرير الملاحظات بالكامل');
+        soundFX.click();
+      });
+    }
+
+    /* ====================================================================
+       13. ONE-CLICK EMAIL DELIVERY ENGINE (PRESTIGIOUS ARABIC TEMPLATE)
+       ==================================================================== */
+    let currentEmailDraft = { to: '', subject: '', body: '' };
+
+    function openClientEmailModal(clientId) {
+      const client = allProjects.find(p => p.id === clientId);
+      if (!client) return;
+
+      const portalUrl = `${window.location.origin}${window.location.pathname}?code=${client.accessCode}`;
+      const subject = `تسليم المواد النهائية بدقة 4K • استوديو ترادينغ للإنتاج السينمائي - ${client.projectTitle}`;
+      
+      const body = `السادة المحترمون / ${client.clientName}،
+
+تحية طيبة وبعد،
+
+يسعدنا في TRADING STUDIOS إعلامكم باكتمال العمليات الفنية والإنتاجية والمعايرة اللونية لمشروعكم:
+"${client.projectTitle}".
+
+تم رفع حزمة الماستر الكاملة بدقة 4K DCI ProRes 422 HQ عبر بوابتكم الخاصة المشفرة:
+• رابط الوصول السحري المباشر:
+${portalUrl}
+
+• رمز الوصول السري الخاص بكم: ${client.accessCode}
+
+ملاحظات المشاهدة الفنية:
+- تم تجهيز المشغل لدعم معايير السينما DCI-P3 والمسرح السينمائي (Cinema Theater Mode).
+- يمكنكم إيقاف الفيديو عند أي لقطة لتسجيل ملاحظات دقيقة بالتوقيت الزمني أو اعتماد النسخة النهائية بضغطة واحدة.
+
+شاكرين ثقتكم الغالية،
+فريق الإنتاج والمعالجة الرقمية | TRADING STUDIOS
+www.tradingstudios.com`;
+
+      currentEmailDraft = {
+        to: client.clientEmail || 'client@example.com',
+        subject: subject,
+        body: body
+      };
+
+      document.getElementById('email-modal-to').textContent = currentEmailDraft.to;
+      document.getElementById('email-modal-subject').textContent = currentEmailDraft.subject;
+      document.getElementById('email-modal-body').textContent = currentEmailDraft.body;
+
+      const mailtoUrl = `mailto:${encodeURIComponent(currentEmailDraft.to)}?subject=${encodeURIComponent(currentEmailDraft.subject)}&body=${encodeURIComponent(currentEmailDraft.body)}`;
+      document.getElementById('email-modal-mailto-link').href = mailtoUrl;
+
+      document.getElementById('email-modal').classList.remove('hidden');
+      soundFX.woosh();
+    }
+
+    function closeEmailModal() {
+      document.getElementById('email-modal').classList.add('hidden');
+    }
+
+    function copyEmailDraftText() {
+      const fullText = `المستلم: ${currentEmailDraft.to}\nالموضوع: ${currentEmailDraft.subject}\n\n${currentEmailDraft.body}`;
+      navigator.clipboard.writeText(fullText).then(() => {
+        showToast('تم نسخ مسودة الإيميل جاهزة للإرسال');
+        soundFX.click();
+      });
+    }
+
+    /* ====================================================================
+       14. SUPABASE CLOUD SYNC & SQL SCHEMAS
+       ==================================================================== */
+    function saveSupabaseSettings() {
+      const url = document.getElementById('supabase-url-input').value.trim();
+      const key = document.getElementById('supabase-key-input').value.trim();
+
+      if (url && key) {
+        localStorage.setItem('TRD_SUPABASE_URL', url);
+        localStorage.setItem('TRD_SUPABASE_KEY', key);
+        SUPABASE_URL = url;
+        SUPABASE_ANON_KEY = key;
+        
+        try {
+          supabaseClient = window.supabase.createClient(url, key);
+          document.getElementById('supabase-live-status').textContent = '● Supabase Cloud Connected';
+          document.getElementById('supabase-live-status').className = 'px-3 py-1 rounded-full bg-blue-950/60 border border-blue-800/50 text-blue-400 text-xs font-mono';
+          showToast('تم ربط قاعدة بيانات Supabase بنجاح!');
+        } catch(e) {
+          showToast('خطأ في إعداد Supabase');
+        }
+      } else {
+        localStorage.removeItem('TRD_SUPABASE_URL');
+        localStorage.removeItem('TRD_SUPABASE_KEY');
+        supabaseClient = null;
+        document.getElementById('supabase-live-status').textContent = '● LocalStorage Active';
+        showToast('تم التحويل إلى وضع التخزين المحلي (LocalStorage)');
+      }
+    }
+
+    function copySupabaseSQLSchema() {
+      const sql = `-- TRADING STUDIOS Database Schema
+CREATE TABLE clients (
+  id TEXT PRIMARY KEY,
+  access_code TEXT UNIQUE NOT NULL,
+  client_name TEXT NOT NULL,
+  client_email TEXT,
+  project_title TEXT NOT NULL,
+  delivery_date DATE,
+  status TEXT,
+  is_approved BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+CREATE TABLE deliverables (
+  id TEXT PRIMARY KEY,
+  client_id TEXT REFERENCES clients(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  category TEXT,
+  aspect TEXT,
+  specs TEXT,
+  stream_url TEXT NOT NULL,
+  download_url TEXT NOT NULL,
+  duration TEXT,
+  thumbnail TEXT
+);
+
+CREATE TABLE feedback (
+  id TEXT PRIMARY KEY,
+  client_id TEXT REFERENCES clients(id) ON DELETE CASCADE,
+  timestamp TEXT NOT NULL,
+  seconds INTEGER NOT NULL,
+  category TEXT,
+  author TEXT,
+  text TEXT NOT NULL,
+  resolved BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);`;
+
+      navigator.clipboard.writeText(sql).then(() => {
+        showToast('تم نسخ كود SQL لإنشاء الجداول في Supabase');
+        soundFX.click();
+      });
+    }
+
+    function resetDefaultDemoData() {
+      if (!confirm('هل تود استعادة بيانات المشاريع الفاخرة التجريبية الأصلية؟')) return;
+      localStorage.removeItem('TRD_STUDIOS_PROJECTS_V2');
+      allProjects = getStoredProjects();
+      renderAdminDashboard();
+      showToast('تم استعادة البيانات التجريبية الفاخرة');
+    }
+
+    /* ====================================================================
+       15. PROCEDURAL 4K FALLBACK CANVAS (Cinematic Offline Visualizer)
+       ==================================================================== */
+    let canvasAnimId = null;
+    function startFallbackCanvas() {
+      const canvas = document.getElementById('fallback-canvas');
+      canvas.classList.remove('hidden');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 1920;
+      canvas.height = 1080;
+
+      let frame = 0;
+      function render() {
+        frame++;
+        ctx.fillStyle = '#050505';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Center Ambient Glow
+        const radGrad = ctx.createRadialGradient(960, 540, 50, 960, 540, 700);
+        radGrad.addColorStop(0, 'rgba(255, 85, 0, 0.22)');
+        radGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = radGrad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 80) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+
+        // Animated Audio Waveform / Spectrum Simulation
+        ctx.fillStyle = '#FF5500';
+        for (let i = 0; i < 40; i++) {
+          const barHeight = Math.sin((frame * 0.05) + i * 0.3) * 60 + 80;
+          ctx.fillRect(680 + i * 14, 540 - barHeight / 2, 8, barHeight);
+        }
+
+        // Center Studio Text
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 36px Montserrat, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.letterSpacing = '12px';
+        ctx.fillText('TRADING STUDIOS', 960, 440);
+
+        ctx.fillStyle = '#888888';
+        ctx.font = '16px monospace';
+        ctx.letterSpacing = '4px';
+        ctx.fillText('4K DCI COLOR CALIBRATION TEST STREAM', 960, 640);
+
+        canvasAnimId = requestAnimationFrame(render);
+      }
+      render();
+    }
+
+    /* ====================================================================
+       16. GLOBAL KEYBOARD SHORTCUTS & EVENT LISTENERS
+       ==================================================================== */
+    window.addEventListener('keydown', (e) => {
+      // Don't trigger shortcuts when typing in inputs or textareas
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag === 'input' || activeTag === 'textarea') return;
+
+      const cmdOrCtrl = e.metaKey || e.ctrlKey;
+
+      // Cmd/Ctrl + T: Theater Mode
+      if (cmdOrCtrl && (e.key === 't' || e.key === 'T')) {
+        e.preventDefault();
+        toggleTheaterMode();
+      }
+
+      // Cmd/Ctrl + D: Quick 4K Download
+      if (cmdOrCtrl && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        triggerActiveVideoDownload();
+      }
+
+      // Space: Play / Pause
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlayPause();
+      }
+
+      // F: Fullscreen
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+
+      // Left / Right Arrow: Seek 5s
+      if (e.key === 'ArrowRight') {
+        seekRelative(5);
+      } else if (e.key === 'ArrowLeft') {
+        seekRelative(-5);
+      }
+
+      // ESC: Close Theater Mode or Modals
+      if (e.key === 'Escape') {
+        if (isTheaterMode) toggleTheaterMode();
+        closeAdminModal();
+        closeEmailModal();
+        closeApprovalModal();
+        document.getElementById('shortcuts-modal').classList.add('hidden');
+      }
+    });
+
+    // Mouse interactive spotlight coordinates
+    window.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+      document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    function toggleShortcutsModal() {
+      const m = document.getElementById('shortcuts-modal');
+      m.classList.toggle('hidden');
+      soundFX.click();
+    }
+
+    function handleLogoClick() {
+      soundFX.click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showToast(msg) {
+      const banner = document.getElementById('toast-banner');
+      const text = document.getElementById('toast-text');
+      text.textContent = msg;
+      banner.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        banner.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* ====================================================================
+       17. PRELOADER & INITIALIZATION
+       ==================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initSmartDeviceEngine();
+      lucide.createIcons();
+
+      // GSAP Preloader Animation
+      const tl = gsap.timeline();
+      tl.from('#preloader-logo', { scale: 0.9, opacity: 0, duration: 0.7, ease: 'power3.out' })
+        .to('#preloader-triangle', { scale: 1.15, transformOrigin: 'center', duration: 0.3, yoyo: true, repeat: 1 })
+        .to('#preloader', {
+          yPercent: -100,
+          duration: 0.8,
+          ease: 'power4.inOut',
+          delay: 0.2,
+          onComplete: () => {
+            document.getElementById('preloader').style.display = 'none';
+            checkMagicLinkAuth();
+          }
+        });
+    });
+  </script>
+</body>
+</html>
