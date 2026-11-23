@@ -1,37 +1,20 @@
-function formatCloudDirectUrl(url) {
-  if (!url) return '';
-  let cleanUrl = url.trim();
+function loadVideoDeliverable(deliverable) {
+  activeDeliverable = deliverable;
+  const video = document.getElementById('main-video-element');
 
-  // Google Drive
-  const gdMatch = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (gdMatch && gdMatch[1]) {
-    return `https://drive.google.com/uc?export=download&id=${gdMatch[1]}`;
-  }
+  document.getElementById('active-video-title').textContent = deliverable.title;
+  document.getElementById('active-video-specs').textContent = deliverable.specs;
+  document.getElementById('player-aspect-badge').textContent = deliverable.aspect || '16:9 DCI';
 
-  // Dropbox
-  if (cleanUrl.includes('dropbox.com')) {
-    return cleanUrl
-      .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
-      .replace(/([?&])dl=0/, '$1dl=1');
-  }
+  // يستخدم streamUrl للمعاينة داخل المشغل، وإذا لم يوجد يستخدم downloadUrl
+  const previewSrc = deliverable.streamUrl || deliverable.downloadUrl;
+  video.pause();
+  video.src = previewSrc;
+  video.load();
 
-  // OneDrive / SharePoint
-  if (
-    cleanUrl.includes('1drv.ms') ||
-    cleanUrl.includes('onedrive.live.com') ||
-    cleanUrl.includes('sharepoint.com')
-  ) {
-    if (cleanUrl.includes('download=1')) return cleanUrl;
-    return cleanUrl + (cleanUrl.includes('?') ? '&download=1' : '?download=1');
-  }
+  document.getElementById('big-play-btn').classList.remove('opacity-0', 'pointer-events-none');
+  document.getElementById('btn-play-icon').setAttribute('data-lucide', 'play');
 
-  return cleanUrl;
-}
-
-function openActiveVideoOnOneDrive() {
-  if (!activeDeliverable || !activeDeliverable.downloadUrl) {
-    showToast('لا يوجد رابط متاح لهذا المقطع');
-    return;
-  }
-  window.open(activeDeliverable.downloadUrl.trim(), '_blank', 'noopener,noreferrer');
+  renderTimelineMarkers();
+  lucide.createIcons();
 }
