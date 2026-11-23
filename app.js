@@ -1,20 +1,14 @@
-function loadVideoDeliverable(deliverable) {
-  activeDeliverable = deliverable;
-  const video = document.getElementById('main-video-element');
+const rawStreamUrl = document.getElementById('deliverable-stream-url').value.trim();
+const previewUrl = document.getElementById('deliverable-preview-url').value.trim();
 
-  document.getElementById('active-video-title').textContent = deliverable.title;
-  document.getElementById('active-video-specs').textContent = deliverable.specs;
-  document.getElementById('player-aspect-badge').textContent = deliverable.aspect || '16:9 DCI';
-
-  // يستخدم streamUrl للمعاينة داخل المشغل، وإذا لم يوجد يستخدم downloadUrl
-  const previewSrc = deliverable.streamUrl || deliverable.downloadUrl;
-  video.pause();
-  video.src = previewSrc;
-  video.load();
-
-  document.getElementById('big-play-btn').classList.remove('opacity-0', 'pointer-events-none');
-  document.getElementById('btn-play-icon').setAttribute('data-lucide', 'play');
-
-  renderTimelineMarkers();
-  lucide.createIcons();
-}
+const newDel = {
+  id: 'vid_' + Date.now(),
+  title: title,
+  category: category,
+  aspect: category === 'social' ? '9:16 Vertical' : (category === 'teaser' ? '2.39:1 Anamorphic' : '16:9 DCI'),
+  specs: specs,
+  streamUrl: previewUrl || rawStreamUrl,
+  downloadUrl: rawStreamUrl,
+  duration: '03:30',
+  thumbnail: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=800&q=80'
+};
